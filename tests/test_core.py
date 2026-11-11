@@ -6,7 +6,7 @@ from pathlib import Path
 
 from retroid_archive.catalogue import load_catalogue, platform_folder
 from retroid_archive.importer import import_local
-from retroid_archive.patching import apply_ips, apply_bps
+from retroid_archive.patching import apply_ips, apply_bps, apply_ups
 from retroid_archive.storage import prepare_sd
 
 
@@ -106,6 +106,28 @@ class PatchTests(unittest.TestCase):
             patch.write_bytes(patch_data[:-1] + b'\0')
             with self.assertRaises(ValueError):
                 apply_bps(base, patch, root / 'bad.gba', hashlib.sha256(source).hexdigest())
+
+    def test_ups_patch_checks_crc_and_produces_target(self):
+        import zlib
+
+        source, target = b'abcdef', b'abXYef'
+        body = b'UPS1' + bytes([0x86, 0x86, 0x82])
+        body += bytes([ord('c') ^ ord('X'), ord('d') ^ ord('Y'), 0])
+        body += zlib.crc32(source).to_bytes(4, 'little')
+        body += zlib.crc32(target).to_bytes(4, 'little')
+        data = body + zlib.crc32(body).to_bytes(4, 'little')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            base = root / 'base.gba'
+            base.write_bytes(source)
+            patch = root / 'fix.ups'
+            patch.write_bytes(data)
+            output = root / 'out.gba'
+            apply_ups(base, patch, output, hashlib.sha256(source).hexdigest())
+            self.assertEqual(output.read_bytes(), target)
+            patch.write_bytes(data[:-1] + b'\0')
+            with self.assertRaises(ValueError):
+                apply_ups(base, patch, root / 'bad.gba', hashlib.sha256(source).hexdigest())
 
 
 class StorageTests(unittest.TestCase):

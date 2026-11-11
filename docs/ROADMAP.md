@@ -8,11 +8,11 @@
 - [x] Scripts de validation et d'audit non destructif
 - [x] Import local par nom exact avec vérification SHA-256 et refus des conflits
 - [x] Téléchargement concurrent reprenable à partir d'un manifeste de sources autorisées et contrôlées
-- [x] Application de patches IPS et BPS sur copie locale vérifiée
+- [x] Application de patches IPS, BPS et UPS sur copie locale vérifiée
 - [x] Préparation des dossiers et plan de transfert ADB avec simulation par défaut
 - [x] Tests automatisés du noyau Python 3.12
 - [ ] Compléter les pages de projets et vérifier les licences, fichiers et empreintes pour chaque contenu redistribuable
-- [ ] Ajouter UPS et xdelta, et valider les bases de patches pour chaque ROM hack
+- [ ] Ajouter xdelta et valider les bases de patches pour chaque ROM hack
 - [ ] Relier le tableau de bord à l'inventaire réel et aux transferts
 - [ ] Installer et configurer les émulateurs et APK autorisés par ADB
 - [ ] Tester le transfert ADB et les conventions ES-DE sur la Retroid Pocket 6 réelle

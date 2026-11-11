@@ -9,7 +9,7 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 - **Émulation Android** — registre des émulateurs et des plateformes dans `emulators/`.
 - **ROM hacks et fangames** — méthode d'installation et distinction claire entre patches et jeux PC dans `romhacks/`.
 - **RetroAchievements** — guide dans `achievements/`.
-- **Outils PC** — validation, import personnel, téléchargement contrôlé, patches IPS/BPS, préparation microSD et transfert ADB dans `retroid_archive/` et `scripts/`.
+- **Outils PC** — validation, import personnel, téléchargement contrôlé, patches IPS/BPS/UPS, préparation microSD et transfert ADB dans `retroid_archive/` et `scripts/`.
 - **Guides** — installation Android, préparation de la carte et précautions légales dans `docs/`.
 
 **Choix éditoriaux :** aucun jeu Pokémon officiel, seulement sept exceptions de course/sport, aucun ajout de jeu de combat versus. Certains fangames PC ne peuvent pas être lancés directement sur Android ; la présence au catalogue n'est pas une garantie de compatibilité.

@@ -52,9 +52,12 @@ La base personnelle doit correspondre exactement à la version et à la région 
 ```powershell
 py -3.12 -m retroid_archive patch-ips --base "D:\Jeux\base.gba" --patch "D:\Patches\mod.ips" --output "D:\Jeux\mod.gba" --base-sha256 VOTRE_SHA256
 py -3.12 -m retroid_archive patch-bps --base "D:\Jeux\base.gba" --patch "D:\Patches\mod.bps" --output "D:\Jeux\mod.gba" --base-sha256 VOTRE_SHA256
+py -3.12 -m retroid_archive patch-ups --base "D:\Jeux\base.gba" --patch "D:\Patches\mod.ups" --output "D:\Jeux\mod.gba" --base-sha256 VOTRE_SHA256
 ```
 
-La base et le patch ne sont jamais modifiés. BPS vérifie également les CRC intégrés du patch, de la base et de la cible. IPS n'intègre pas de CRC cible : comparer au SHA-256 publié par l'auteur si disponible. UPS et xdelta ne sont pas encore intégrés.
+La base et le patch ne sont jamais modifiés. BPS et UPS vérifient également les CRC intégrés du patch, de la base et de la cible. IPS n'intègre pas de CRC cible : comparer au SHA-256 publié par l'auteur si disponible. xdelta n'est pas encore intégré.
+
+Le patch [Pokémon Gaia v3.2](https://www.pokecommunity.com/threads/pok%C3%A9mon-gaia-version.326118/) provient du miroir indiqué par son auteur. Son archive ZIP a le SHA-256 `13b77277b775d2e526f531ac290667b9f1b557a680fc012dc87204a140a0c3be` et contient `pokemon_gaia_v3.2.ups`, un README et `NUPS.exe`. Le README indique une base FireRed (U) « 1635 », avec « 1636 » également compatible selon l'auteur. Ne pas exécuter le programme joint à l'archive ; notre commande `patch-ups` applique le patch directement.
 
 ## Préparer et transférer sur microSD
 

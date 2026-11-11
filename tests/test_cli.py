@@ -16,6 +16,13 @@ class CliTests(unittest.TestCase):
         self.assertEqual(exit_status.exception.code, 0)
         self.assertIn('--base-sha256', output.getvalue())
 
+    def test_ups_command_is_available(self):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), self.assertRaises(SystemExit) as exit_status:
+            main(['patch-ups', '--help'])
+        self.assertEqual(exit_status.exception.code, 0)
+        self.assertIn('--base-sha256', output.getvalue())
+
     def test_status_reports_all_games_and_source_pages(self):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):

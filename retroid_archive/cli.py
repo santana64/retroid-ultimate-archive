@@ -10,7 +10,7 @@ from .catalogue import load_catalogue
 from .adb import build_plan, deploy
 from .downloads import download_manifest
 from .importer import import_local
-from .patching import apply_ips, apply_bps
+from .patching import apply_ips, apply_bps, apply_ups
 from .storage import prepare_sd
 
 
@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     deployment.add_argument('--remote', required=True)
     deployment.add_argument('--serial')
     deployment.add_argument('--apply', action='store_true', help='Lancer le transfert ADB réel')
-    for kind in ('ips', 'bps'):
+    for kind in ('ips', 'bps', 'ups'):
         patch = sub.add_parser(f'patch-{kind}', help=f'Appliquer un patch {kind.upper()} à une copie personnelle')
         patch.add_argument('--base', required=True, type=Path)
         patch.add_argument('--patch', required=True, type=Path)
@@ -93,8 +93,8 @@ def main(argv: list[str] | None = None) -> int:
         _print({'mode': 'simulation', 'files': len(plan),
                 'bytes': sum(item['bytes'] for item in plan), 'plan': plan})
         return 0
-    if args.command in ('patch-ips', 'patch-bps'):
-        func = apply_ips if args.command == 'patch-ips' else apply_bps
+    if args.command in ('patch-ips', 'patch-bps', 'patch-ups'):
+        func = {'patch-ips': apply_ips, 'patch-bps': apply_bps, 'patch-ups': apply_ups}[args.command]
         digest = func(args.base, args.patch, args.output, args.base_sha256)
         _print({'output': str(args.output), 'sha256': digest})
         return 0

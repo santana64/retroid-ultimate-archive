@@ -147,3 +147,67 @@ def apply_bps(base: Path, patch: Path, output: Path, expected_base_sha256: str) 
     finally:
         staging.unlink(missing_ok=True)
     return sha256(output)
+
+
+def apply_ups(base: Path, patch: Path, output: Path, expected_base_sha256: str) -> str:
+    """Appliquer UPS1 et vérifier les CRC de la base, de la cible et du patch."""
+    if not expected_base_sha256 or sha256(base).lower() != expected_base_sha256.lower():
+        raise ValueError('SHA-256 du jeu de base incorrect')
+    if output.exists() or output.resolve() in {base.resolve(), patch.resolve()}:
+        raise FileExistsError('La sortie existe ou écraserait une entrée')
+    source = base.read_bytes()
+    data = patch.read_bytes()
+    if not data.startswith(b'UPS1') or len(data) < 19:
+        raise ValueError('En-tête UPS invalide')
+    if zlib.crc32(data[:-4]) != int.from_bytes(data[-4:], 'little'):
+        raise ValueError('CRC du patch UPS incorrect')
+    end = len(data) - 12
+    pos = 4
+
+    def varint() -> int:
+        nonlocal pos
+        value, shift = 0, 1
+        while pos < end:
+            byte = data[pos]
+            pos += 1
+            value += (byte & 127) * shift
+            if byte & 128:
+                return value
+            shift <<= 7
+            value += shift
+        raise ValueError('Variable UPS tronquée')
+
+    source_size, target_size = varint(), varint()
+    if source_size != len(source) or target_size > 64 * 1024 * 1024:
+        raise ValueError('Tailles UPS invalides')
+    if zlib.crc32(source) != int.from_bytes(data[-12:-8], 'little'):
+        raise ValueError('CRC de la base UPS incorrect')
+    result = bytearray(source[:target_size])
+    if len(result) < target_size:
+        result.extend(b'\0' * (target_size - len(result)))
+    offset = 0
+    while pos < end:
+        offset += varint()
+        while True:
+            if pos >= end:
+                raise ValueError('Patch UPS tronqué')
+            value = data[pos]
+            pos += 1
+            if value == 0:
+                offset += 1
+                break
+            if offset >= target_size:
+                raise ValueError('Action UPS hors cible')
+            result[offset] ^= value
+            offset += 1
+    if zlib.crc32(result) != int.from_bytes(data[-8:-4], 'little'):
+        raise ValueError('CRC de la cible UPS incorrect')
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=output.parent, prefix='.patch-', delete=False) as stream:
+        staging = Path(stream.name)
+        stream.write(result)
+    try:
+        os.replace(staging, output)
+    finally:
+        staging.unlink(missing_ok=True)
+    return sha256(output)
