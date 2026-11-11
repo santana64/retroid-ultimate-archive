@@ -16,11 +16,13 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 
 ## Démarrage rapide
 
-1. Parcourir `docs/index.html` sur ordinateur.
-2. Consulter `docs/INSTALLATION.md`.
-3. Installer Python 3.12+ et exécuter `python -m retroid_archive status` (aucune dépendance externe).
-4. À réception de la console, installer ES-DE puis **le laisser créer les dossiers** avant de copier des fichiers.
-5. Utiliser `python scripts/audit_library.py --root "CHEMIN_VERS_LA_CARTE"` pour obtenir un rapport sans modifier la carte.
+1. Installer Python 3.12+.
+2. Dans le dépôt, lancer `python retroid.py setup --all`.
+3. Lire `data/report.csv` : les 899 entrées ont chacune un statut.
+4. Ouvrir `python retroid.py dashboard` pour suivre les opérations.
+5. Copier `retroid.example.toml` vers `retroid.toml` pour ajouter ses dossiers de jeux personnels, sa microSD ou ses APK d'émulateur vérifiés, puis relancer `python retroid.py resume`.
+
+La première exécution télécharge automatiquement les deux sources contrôlées dans `sources/verified.json` (patch Gaia et mod SIGIL). Elle n'invente pas de fichiers pour les titres sans source ni copie locale. Les fichiers et rapports personnels restent dans `data/`, ignoré par Git.
 
 Pour importer ses propres fichiers, préparer la microSD, appliquer des patches ou préparer le transfert ADB, consulter [le guide d'automatisation](docs/AUTOMATISATION.md). Les commandes de préparation et de déploiement sont en simulation par défaut.
 
@@ -32,6 +34,6 @@ La liste est une sélection culturelle, pas un benchmark individuel de 899 jeux.
 
 ## État du projet
 
-Le noyau local est opérationnel et testé par des tests automatisés. L'installation des émulateurs, l'interface de gestion connectée à l'état réel, les autres formats de patches et les tests individuels sur Retroid restent à réaliser. Ce dépôt sert de **source de vérité**, tandis que les données volumineuses restent sur la microSD ou un stockage personnel distinct.
+La CLI, le scan des 899 entrées, la reprise, le téléchargement de sources validées, l'import local, les patches IPS/BPS/UPS, la copie microSD, le transfert ADB et le tableau de bord Windows disposent de tests automatisés. L'installation des APK locaux vérifiés est prête pour un appareil ADB, mais aucun émulateur ni jeu n'a été testé sur une Retroid Pocket 6. La recherche des autres sources, les configurations d'émulateur par système et les médias restent à compléter. Ce dépôt sert de **source de vérité**, tandis que les données volumineuses restent sur la microSD ou un stockage personnel distinct.
 
 Les marques et titres cités appartiennent à leurs ayants droit.

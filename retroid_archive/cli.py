@@ -8,10 +8,14 @@ from pathlib import Path
 
 from .catalogue import load_catalogue
 from .adb import build_plan, deploy
+from .config import load_config
 from .downloads import download_manifest
 from .importer import import_local
 from .patching import apply_ips, apply_bps, apply_ups
 from .storage import prepare_sd
+from .runner import STEP_ORDER, run_setup
+from .state import ArchiveState
+from .dashboard import launch_dashboard
 
 
 def _print(value: dict) -> None:
@@ -21,8 +25,16 @@ def _print(value: dict) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog='retroid-archive', description='Préparer une bibliothèque Retroid personnelle')
     sub = parser.add_subparsers(dest='command', required=True)
+    for name in ('setup', 'scan', 'fetch', 'import', 'patch', 'prepare', 'install', 'verify', 'resume', 'report'):
+        command = sub.add_parser(name, help=f'Étape automatisée : {name}')
+        command.add_argument('--config', type=Path, help='Configuration TOML personnelle')
+        if name == 'setup':
+            command.add_argument('--all', action='store_true', help='Exécuter toutes les étapes')
+    dashboard = sub.add_parser('dashboard', help='Ouvrir le tableau de bord Windows')
+    dashboard.add_argument('--config', type=Path)
     status = sub.add_parser('status', help='Bilan du catalogue')
     status.add_argument('--json', action='store_true')
+    status.add_argument('--config', type=Path)
     sources = sub.add_parser('sources', help='Exporter les pages sources connues')
     sources.add_argument('--output', required=True, type=Path)
     local = sub.add_parser('import-local', help='Copier les fichiers personnels correspondants')
@@ -47,6 +59,18 @@ def main(argv: list[str] | None = None) -> int:
         patch.add_argument('--output', required=True, type=Path)
         patch.add_argument('--base-sha256', required=True)
     args = parser.parse_args(argv)
+    if args.command == 'dashboard':
+        launch_dashboard(args.config)
+        return 0
+    if args.command in ('setup', 'scan', 'fetch', 'import', 'patch', 'prepare', 'install', 'verify', 'resume', 'report'):
+        if args.command == 'setup' and not args.all:
+            parser.error('setup exige --all')
+        config = load_config(args.config)
+        steps = set(STEP_ORDER) if args.command in ('setup', 'resume') else {args.command, 'report'}
+        with ArchiveState(config.data_dir / 'state.sqlite') as state:
+            result = run_setup(config, state, steps)
+        _print(result)
+        return 1 if any(item['status'] == 'failed' for item in result['steps'] if item['name'] in steps) else 0
     games = load_catalogue()
 
     if args.command == 'status':
@@ -58,6 +82,19 @@ def main(argv: list[str] | None = None) -> int:
                   'source_pages': sum(bool(game.official_link) for game in games),
                   'files_downloaded': 0, 'files_imported': 0, 'patches_applied': 0,
                   'by_platform': dict(sorted(platforms.items()))}
+        state_path = load_config(args.config).data_dir / 'state.sqlite'
+        if state_path.is_file():
+            with ArchiveState(state_path) as state:
+                summary = state.summary()
+            steps = {step['name']: step['detail'] for step in summary['steps']}
+            fetch = steps.get('fetch', {})
+            imported = steps.get('import', {})
+            patched = steps.get('patch', {})
+            result.update({'available': summary['available'], 'missing': summary['missing'],
+                           'patch_only': summary['patch_only'], 'mod_only': summary['mod_only'],
+                           'files_downloaded': fetch.get('downloaded', 0) + fetch.get('existing', 0),
+                           'files_imported': imported.get('imported', 0) + imported.get('existing', 0),
+                           'patches_applied': patched.get('applied', 0) + patched.get('existing', 0)})
         if args.json:
             _print(result)
         else:

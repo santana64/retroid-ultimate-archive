@@ -68,12 +68,16 @@ class ArchiveState:
     def set_step(self, name: str, status: str, detail: dict) -> None:
         if status not in ('running', 'completed', 'skipped', 'failed'):
             raise ValueError('Statut d’étape invalide')
+        now = datetime.now(timezone.utc).isoformat()
         self.db.execute('''
             INSERT INTO steps (name,status,detail,updated_at) VALUES (?,?,?,?)
             ON CONFLICT(name) DO UPDATE SET status=excluded.status,
               detail=excluded.detail, updated_at=excluded.updated_at
-        ''', (name, status, json.dumps(detail, ensure_ascii=False), datetime.now(timezone.utc).isoformat()))
+        ''', (name, status, json.dumps(detail, ensure_ascii=False), now))
         self.db.commit()
+        with self.path.with_suffix('.jsonl').open('a', encoding='utf-8') as stream:
+            stream.write(json.dumps({'at': now, 'name': name, 'status': status,
+                                     'detail': detail}, ensure_ascii=False) + '\n')
 
     def step(self, name: str) -> dict | None:
         row = self.db.execute('SELECT * FROM steps WHERE name=?', (name,)).fetchone()
@@ -95,6 +99,7 @@ class ArchiveState:
         return {'games': sum(counts.values()), 'available': counts.get('available', 0),
                 'downloadable': counts.get('downloadable', 0),
                 'patch_only': counts.get('patch_only', 0),
+                'mod_only': counts.get('mod_only', 0),
                 'source_candidate': counts.get('source_candidate', 0),
                 'ambiguous': counts.get('ambiguous', 0),
                 'missing': counts.get('missing', 0), 'status_counts': counts,

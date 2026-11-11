@@ -11,6 +11,11 @@
 - [x] Application de patches IPS, BPS et UPS sur copie locale vérifiée
 - [x] Préparation des dossiers et plan de transfert ADB avec simulation par défaut
 - [x] Tests automatisés du noyau Python 3.12
+- [x] `python retroid.py setup --all` avec état SQLite, reprise et rapports par jeu
+- [x] Deux sources contrôlées téléchargées et extraites automatiquement sans inclure de ROM de base
+- [x] Copie microSD non destructive et vérifiée par SHA-256
+- [x] Tableau de bord Windows relié à l'état réel
+- [x] Installation ADB de fichiers APK locaux avec SHA-256 et vérification du paquet
 - [ ] Compléter les pages de projets et vérifier les licences, fichiers et empreintes pour chaque contenu redistribuable
 - [ ] Ajouter xdelta et valider les bases de patches pour chaque ROM hack
 - [ ] Relier le tableau de bord à l'inventaire réel et aux transferts

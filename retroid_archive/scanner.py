@@ -31,7 +31,10 @@ def scan_catalogue(games: list[Game], library: Path, sources: list[dict], state:
         file_path = None
         size = 0
         if len(matches) == 1:
-            status = 'available'
+            base_names = {name.casefold() for name in source.get('base_files', [])} if source else set()
+            present = {path.name.casefold() for path in (library / folder).iterdir()} if base_names else set()
+            status = ('mod_only' if source and source['kind'] == 'mod'
+                      and (not base_names or not base_names.issubset(present)) else 'available')
             file_path = str(matches[0])
             size = matches[0].stat().st_size
         elif len(matches) > 1:
@@ -48,4 +51,6 @@ def scan_catalogue(games: list[Game], library: Path, sources: list[dict], state:
             status = 'missing'
         state.update_game(game.id, game.title, game.platform, status, file_path, size,
                           source['evidence_url'] if source else game.official_link or None)
-    return state.summary()
+    result = state.summary()
+    del result['steps']
+    return result

@@ -21,6 +21,7 @@
     "sha256": "57c35a6bcd722433fc97344314e52c06c91fdfde33b18c6d1c14a4d29e229105",
     "download_authorized": true,
     "evidence_url": "https://romero.com/sigil",
+    "base_files": ["DOOM.WAD"],
     "members": [
       {"name": "SIGIL_V1_23.wad", "sha256": "29c3b8400657be4546eab1878e2883ffc50771c6be575677b1be5a0d0430f55d"}
     ]

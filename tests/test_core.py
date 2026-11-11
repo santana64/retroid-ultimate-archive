@@ -7,7 +7,7 @@ from pathlib import Path
 from retroid_archive.catalogue import load_catalogue, platform_folder
 from retroid_archive.importer import import_local
 from retroid_archive.patching import apply_ips, apply_bps, apply_ups
-from retroid_archive.storage import prepare_sd
+from retroid_archive.storage import prepare_sd, sync_library_to_sd
 
 
 class CatalogueTests(unittest.TestCase):
@@ -140,6 +140,23 @@ class StorageTests(unittest.TestCase):
             self.assertTrue((root / 'BIOS').is_dir())
             self.assertTrue((root / 'Patches').is_dir())
             self.assertTrue((root / 'Saves').is_dir())
+
+    def test_sd_sync_copies_once_and_refuses_conflicting_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            library = root / 'library'
+            (library / 'gba').mkdir(parents=True)
+            (library / 'gba' / 'Game.gba').write_bytes(b'owned')
+            card = root / 'card'
+            card.mkdir()
+            first = sync_library_to_sd(library, card)
+            self.assertEqual(first['copied'], 1)
+            self.assertEqual((card / 'ROMs' / 'gba' / 'Game.gba').read_bytes(), b'owned')
+            self.assertEqual(sync_library_to_sd(library, card)['existing'], 1)
+            (card / 'ROMs' / 'gba' / 'Game.gba').write_bytes(b'other')
+            conflict = sync_library_to_sd(library, card)
+            self.assertEqual(len(conflict['conflicts']), 1)
+            self.assertEqual((card / 'ROMs' / 'gba' / 'Game.gba').read_bytes(), b'other')
 
 
 if __name__ == '__main__':

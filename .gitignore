@@ -86,6 +86,10 @@ user_progress.json
 userdata/
 downloads/
 library/
+data/
+retroid.toml
+*.sqlite
+*.jsonl
 # Python, éditeurs et OS
 __pycache__/
 .pytest_cache/

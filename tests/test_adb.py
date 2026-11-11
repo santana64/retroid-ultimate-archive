@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from subprocess import CompletedProcess
 
-from retroid_archive.adb import build_plan, deploy, parse_devices, validate_remote
+from retroid_archive.adb import build_plan, deploy, install_apks, parse_devices, validate_remote
 
 
 class AdbTests(unittest.TestCase):
@@ -47,6 +47,31 @@ class AdbTests(unittest.TestCase):
             self.assertEqual(report['existing'], 1)
             self.assertEqual(report['transferred'], 0)
             self.assertFalse(any('push' in call for call in calls))
+
+    def test_apk_install_checks_hash_and_package(self):
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as tmp:
+            apk = Path(tmp) / 'emulator.apk'
+            apk.write_bytes(b'fake apk for command test')
+            item = {'path': str(apk), 'sha256': hashlib.sha256(apk.read_bytes()).hexdigest(),
+                    'package': 'org.example.emulator'}
+            calls = []
+
+            def runner(args):
+                calls.append(args)
+                if args == ['adb', 'devices', '-l']:
+                    return CompletedProcess(args, 0, 'List of devices attached\nABC\tdevice\n', '')
+                if 'install' in args:
+                    return CompletedProcess(args, 0, 'Success\n', '')
+                return CompletedProcess(args, 0, 'package:/data/app/example/base.apk\n', '')
+
+            report = install_apks([item], runner=runner)
+            self.assertEqual(report['installed'], 1)
+            self.assertTrue(any('install' in call for call in calls))
+            item['sha256'] = '0' * 64
+            with self.assertRaises(ValueError):
+                install_apks([item], runner=runner)
 
 
 if __name__ == '__main__':

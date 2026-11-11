@@ -55,6 +55,8 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
                 raise ValueError('Membre d’archive invalide')
             if not re.fullmatch(r'[0-9a-fA-F]{64}', str(member.get('sha256', ''))):
                 raise ValueError('SHA-256 de membre absent')
+        if any(not _safe_name(str(name)) for name in item.get('base_files', [])):
+            raise ValueError('Nom de fichier de base invalide')
     return sources
 
 

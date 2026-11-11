@@ -95,3 +95,43 @@ def deploy(plan: list[dict], remote_root: str, serial: str | None = None, runner
             continue
         report['transferred'] += 1
     return report
+
+
+def install_apks(items: list[dict], serial: str | None = None, runner=_run) -> dict:
+    """Installer des APK locaux hachés et confirmer leur paquet Android."""
+    prepared = []
+    for item in items:
+        path = Path(item['path']).expanduser().resolve(strict=True)
+        digest = item.get('sha256', '')
+        package = item.get('package', '')
+        if path.suffix.lower() != '.apk' or not path.is_file():
+            raise ValueError('APK local invalide')
+        if not re.fullmatch(r'[0-9a-fA-F]{64}', digest) or sha256(path) != digest.lower():
+            raise ValueError('SHA-256 APK incorrect')
+        if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+', package):
+            raise ValueError('Identifiant de paquet Android invalide')
+        prepared.append((path, package))
+    devices_result = runner(['adb', 'devices', '-l'])
+    if devices_result.returncode:
+        raise OSError(devices_result.stderr or 'ADB indisponible')
+    devices = parse_devices(devices_result.stdout)
+    if serial:
+        if serial not in devices:
+            raise ValueError('Appareil ADB demandé non autorisé ou absent')
+    elif len(devices) == 1:
+        serial = devices[0]
+    else:
+        raise ValueError('Un seul appareil ADB autorisé est requis, ou préciser --serial')
+    prefix = ['adb', '-s', serial]
+    report: dict = {'serial': serial, 'installed': 0, 'errors': []}
+    for path, package in prepared:
+        result = runner(prefix + ['install', '-r', str(path)])
+        if result.returncode or 'Success' not in result.stdout:
+            report['errors'].append({'package': package, 'error': result.stderr or result.stdout or 'Installation échouée'})
+            continue
+        verified = runner(prefix + ['shell', f'pm path {package}'])
+        if verified.returncode or 'package:' not in verified.stdout:
+            report['errors'].append({'package': package, 'error': 'Paquet absent après installation'})
+            continue
+        report['installed'] += 1
+    return report

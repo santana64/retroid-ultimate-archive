@@ -1,5 +1,32 @@
 # Automatisation locale Windows
 
+## Commande unique et état réel
+
+Depuis la racine du dépôt, avec Python 3.12+ :
+
+```powershell
+python retroid.py setup --all
+python retroid.py dashboard
+```
+
+`setup --all` lit les 899 entrées, télécharge les sources contrôlées de `sources/verified.json`, importe les dossiers personnels configurés, applique les patches disposant de leur base, prépare la bibliothèque et la carte configurée, tente les opérations ADB configurées, vérifie les fichiers et écrit `data/report.json`, `data/report.csv` et `data/files.json`. L'état et le journal structuré se trouvent dans `data/state.sqlite` et `data/state.jsonl`. Une nouvelle exécution avec `python retroid.py resume` réutilise les archives et copies identiques. Les commandes `scan`, `fetch`, `import`, `patch`, `prepare`, `install`, `verify` et `report` exécutent séparément une étape et mettent à jour le bilan.
+
+La première exécution ne demande aucune configuration. Pour chercher ses propres copies, sa carte et des APK locaux, copier `retroid.example.toml` vers `retroid.toml` et y indiquer les chemins concernés. Exemple :
+
+```toml
+data_dir = "data"
+import_roots = ["D:/Mes jeux", "F:/Archives personnelles"]
+sd_root = "E:/"
+max_workers = 4
+
+[patch_bases]
+"622" = "D:/Mes jeux/Pokemon FireRed.gba"
+```
+
+`sd_root` doit être un dossier ou lecteur existant. Le transfert microSD copie sans écraser les fichiers différents et contrôle chaque SHA-256. L'installation Android exige un appareil ADB autorisé. Pour un APK, ajouter `[[emulator_apks]]` avec le chemin local, son SHA-256 et l'identifiant de paquet Android ; l'installation est ensuite vérifiée avec `pm path`. Le programme ne télécharge pas encore les APK d'émulateurs faute de manifeste d'archives et d'empreintes validé. Il ne prétend pas configurer les contrôles ou garantir la compatibilité.
+
+Les statuts `patch_only` et `mod_only` signifient qu'un fichier additionnel est présent, mais que le jeu de base manque. `available` signifie qu'un fichier local correspondant est présent ; cela ne garantit ni lancement ni compatibilité. `source_candidate` indique seulement une page à examiner. `missing` signifie qu'aucune source vérifiée ni copie locale n'a été trouvée par cette exécution. Le rapport CSV garde un statut explicite pour chaque ID.
+
 ## Préparer le PC
 
 Installer Python 3.12 ou plus récent. Depuis la racine du dépôt, utiliser `py -3.12 -m retroid_archive` ou installer le paquet avec `py -3.12 -m pip install -e .` puis utiliser `retroid-archive`.
@@ -31,13 +58,13 @@ Créer un manifeste JSON local après avoir vérifié l'autorisation du projet e
     "url": "https://exemple-auteur.invalid/patch.bps",
     "filename": "patch.bps",
     "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-    "redistribution_verified": true,
+    "download_authorized": true,
     "evidence_url": "https://exemple-auteur.invalid/licence"
   }
 ]
 ```
 
-Cet exemple est un **gabarit**, pas une source réelle. Le moteur refuse les entrées sans page de preuve HTTPS, empreinte attendue, ou confirmation explicite de distribution. Il refuse les chemins de sortie traversants et les noms dupliqués. Le téléchargement utilise jusqu'à 4 transferts simultanés par défaut, reprend les fichiers `.part`, réessaie les erreurs réseau temporaires et vérifie SHA-256 avant de renommer le fichier final.
+Cet exemple est un **gabarit**, pas une source réelle. Le moteur refuse les entrées sans page de preuve HTTPS, empreinte attendue ou confirmation explicite d'un téléchargement autorisé. Cela n'autorise pas la republication du fichier dans Git. Il refuse les chemins de sortie traversants et les noms dupliqués. Le téléchargement utilise jusqu'à 4 transferts simultanés par défaut, reprend les fichiers `.part`, réessaie les erreurs réseau temporaires et vérifie SHA-256 avant de renommer le fichier final.
 
 ```powershell
 py -3.12 -m retroid_archive download --manifest .\mes-sources.json --output "D:\Retroid\Patches" --workers 4
@@ -81,4 +108,4 @@ Le premier appel affiche le plan sans accéder à l'appareil. Le second exige un
 
 ## État et limites
 
-Le tableau HTML existant reste un catalogue hors ligne ; son état « terminé » est stocké dans le navigateur, pas relié aux fichiers du PC. L'installation des APK, la configuration des émulateurs, RetroAchievements, les contrôles de lancement et le suivi des trophées ne sont pas encore automatisés. Les performances des jeux restent inconnues tant que la console et les fichiers personnels ne sont pas disponibles pour test.
+Le tableau HTML existant reste un catalogue hors ligne ; son état « terminé » est stocké dans le navigateur. Le nouveau tableau Windows lit l'état réel de `state.sqlite`. Les APK locaux hachés peuvent être installés via ADB, mais le téléchargement et la configuration des émulateurs, RetroAchievements, les contrôles de lancement et le suivi des trophées ne sont pas encore automatisés. Les performances des jeux restent inconnues tant que la console et les fichiers personnels ne sont pas disponibles pour test.

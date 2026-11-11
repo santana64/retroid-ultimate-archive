@@ -37,6 +37,17 @@ class StateTests(unittest.TestCase):
                 self.assertEqual(state.game(622)['status'], 'patch_only')
                 self.assertEqual(state.summary()['available'], 0)
 
+    def test_mod_without_base_is_not_reported_available(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            mod_dir = root / 'ROMs' / 'doom'
+            mod_dir.mkdir(parents=True)
+            (mod_dir / 'SIGIL_V1_23.wad').write_bytes(b'mod')
+            with ArchiveState(root / 'state.sqlite') as state:
+                scan_catalogue(load_catalogue(), root / 'ROMs', load_verified_sources(), state)
+                self.assertEqual(state.game(676)['status'], 'mod_only')
+                self.assertEqual(state.summary()['available'], 0)
+
     def test_step_survives_reopen(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'state.sqlite'
@@ -45,6 +56,7 @@ class StateTests(unittest.TestCase):
             with ArchiveState(path) as state:
                 self.assertEqual(state.step('fetch')['status'], 'completed')
                 self.assertEqual(state.step('fetch')['detail']['downloaded'], 2)
+            self.assertIn('"name": "fetch"', path.with_suffix('.jsonl').read_text(encoding='utf-8'))
 
     def test_scan_removes_stale_catalogue_ids(self):
         with tempfile.TemporaryDirectory() as tmp:
