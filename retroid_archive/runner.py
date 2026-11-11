@@ -98,7 +98,7 @@ def _patch(config: Config, sources: list[dict], games_by_id: dict) -> tuple[str,
             base = config.patch_bases.get(game_id)
             if base is None:
                 try:
-                    base, reason = find_base(patch, roots)
+                    base, reason = find_base(patch, roots, config.data_dir / 'base-cache')
                 except Exception as exc:
                     result['errors'].append({'id': game_id, 'error': f'Recherche de base : {exc}'})
                     continue

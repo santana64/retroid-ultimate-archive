@@ -231,6 +231,28 @@ class RunnerTests(unittest.TestCase):
             status, detail = _patch(config, [source], {1: game})
             self.assertEqual((status, detail['existing']), ('completed', 1))
 
+    def test_patch_finds_compatible_base_inside_personal_zip(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            owned = root / 'owned'
+            owned.mkdir()
+            with zipfile.ZipFile(owned / 'my-dump.zip', 'w') as z:
+                z.writestr('backup/base.gba', b'abcdef')
+            config = replace(load_config(), data_dir=root / 'data', library=root / 'ROMs',
+                             import_roots=(owned,), patch_bases={})
+            patch = config.data_dir / 'patches' / '1' / 'test.ups'
+            patch.parent.mkdir(parents=True)
+            body = b'UPS1' + bytes([0x86, 0x86, 0x82, ord('c') ^ ord('X'), ord('d') ^ ord('Y'), 0])
+            body += zlib.crc32(b'abcdef').to_bytes(4, 'little')
+            body += zlib.crc32(b'abXYef').to_bytes(4, 'little')
+            patch.write_bytes(body + zlib.crc32(body).to_bytes(4, 'little'))
+            source = {'id': 1, 'kind': 'patch', 'members': [{'name': 'test.ups'}]}
+            game = Game(1, 'Test', 'GBA', '', '', 'my-copy', '')
+            status, detail = _patch(config, [source], {1: game})
+            self.assertEqual((status, detail['applied']), ('completed', 1))
+            self.assertEqual((config.library / 'gba' / 'Test.gba').read_bytes(), b'abXYef')
+            self.assertTrue(any((config.data_dir / 'base-cache').glob('*.gba')))
+
 
 if __name__ == '__main__':
     unittest.main()

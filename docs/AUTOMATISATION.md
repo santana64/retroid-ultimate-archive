@@ -20,7 +20,7 @@ sd_root = "E:/"
 max_workers = 4
 ```
 
-Pour les patches BPS/UPS, le programme lit la taille et le CRC32 de la ROM de base dans le patch, recherche récursivement une copie compatible dans `import_roots` et `library`, puis applique automatiquement le patch. Les copies identiques dans plusieurs dossiers ne demandent aucun choix. Le fichier de base n'est jamais modifié. `patch_bases` reste un recours facultatif pour un patch IPS sans empreinte de base ou un cas ambigu ; aucun chemin par jeu n'est normalement nécessaire.
+Pour les patches BPS/UPS, le programme lit la taille et le CRC32 de la ROM de base dans le patch, recherche récursivement une copie compatible dans `import_roots` et `library`, y compris dans les archives ZIP personnelles, puis applique automatiquement le patch. Une ROM trouvée dans un ZIP est extraite dans le cache privé `data/base-cache/`. Les copies identiques dans plusieurs dossiers ne demandent aucun choix. Le fichier de base n'est jamais modifié. `patch_bases` reste un recours facultatif pour un patch IPS sans empreinte de base ou un cas ambigu ; aucun chemin par jeu n'est normalement nécessaire.
 
 `sd_root` doit être un dossier ou lecteur existant. Le transfert microSD copie sans écraser les fichiers différents et contrôle chaque SHA-256. L'installation Android exige un appareil ADB autorisé. Pour un APK, ajouter `[[emulator_apks]]` avec le chemin local, son SHA-256 et l'identifiant de paquet Android ; l'installation est ensuite vérifiée avec `pm path`. Le programme ne télécharge pas encore les APK d'émulateurs faute de manifeste d'archives et d'empreintes validé. Il ne prétend pas configurer les contrôles ou garantir la compatibilité.
 
