@@ -97,6 +97,7 @@ class ArchiveState:
         counts = {row['status']: row['n'] for row in self.db.execute(
             'SELECT status, COUNT(*) AS n FROM games GROUP BY status')}
         return {'games': sum(counts.values()), 'available': counts.get('available', 0),
+                'apk_ready': counts.get('apk_ready', 0),
                 'downloadable': counts.get('downloadable', 0),
                 'patch_only': counts.get('patch_only', 0),
                 'mod_only': counts.get('mod_only', 0),

@@ -25,5 +25,28 @@
     "members": [
       {"name": "SIGIL_V1_23.wad", "sha256": "29c3b8400657be4546eab1878e2883ffc50771c6be575677b1be5a0d0430f55d"}
     ]
+  },
+  {
+    "id": 682,
+    "kind": "fangame",
+    "version": "1.12.3",
+    "url": "https://gitlab.com/solarus-games/games/zsdx/-/releases/v1.12.3/downloads/zsdx-v1.12.3.solarus",
+    "filename": "zsdx-v1.12.3.solarus",
+    "sha256": "1f7d78fbf538de819451f0c37f762b5baabc1ec2572e10f8e05dedb0579dc95a",
+    "download_authorized": true,
+    "evidence_url": "https://www.solarus-games.org/games/the-legend-of-zelda-mystery-of-solarus-dx/",
+    "artifact_format": "direct"
+  },
+  {
+    "id": 679,
+    "kind": "fangame",
+    "version": "2.2.13-patch1",
+    "url": "https://github.com/SRB2-Mobile/SRB2-Android/releases/download/android-port-build-v2213-patch1/srb2-android-v2213-gameFull-release-patch1.apk",
+    "filename": "srb2-android-v2213-gameFull-release-patch1.apk",
+    "sha256": "e2523670af2404ce47545230b43e4accc616f48206a8138933606eab8d89d027",
+    "download_authorized": true,
+    "evidence_url": "https://github.com/SRB2-Mobile/SRB2-Android/releases/tag/android-port-build-v2213-patch1",
+    "artifact_format": "apk",
+    "package": "org.stjr.srb2"
   }
 ]

@@ -14,7 +14,7 @@ from .downloads import download_manifest
 from .importer import EXTENSIONS, import_local, sha256
 from .patching import apply_bps, apply_ips, apply_ups
 from .scanner import scan_catalogue
-from .sources import extract_verified, load_verified_sources
+from .sources import copy_verified_direct, extract_verified, load_verified_sources
 from .state import ArchiveState
 from .storage import prepare_sd, sync_library_to_sd
 
@@ -51,10 +51,16 @@ def _fetch(config: Config, sources: list[dict], games_by_id: dict) -> dict:
         if not archive.is_file() or sha256(archive) != source['sha256'].lower():
             continue
         folder = (config.data_dir / 'patches' / str(source['id']) if source['kind'] == 'patch'
+                  else config.data_dir / 'apks' if source.get('artifact_format') == 'apk'
                   else config.library / platform_folder(games_by_id[source['id']].platform))
         try:
-            new_count = sum(not (folder / member['name']).exists() for member in source['members'])
-            extract_verified(archive, folder, source['members'])
+            if source.get('artifact_format') in ('direct', 'apk'):
+                target = folder / source['filename']
+                new_count = int(not target.exists())
+                copy_verified_direct(archive, target, source['sha256'])
+            else:
+                new_count = sum(not (folder / member['name']).exists() for member in source['members'])
+                extract_verified(archive, folder, source['members'])
             extracted += new_count
         except Exception as exc:
             result['errors'].append({'id': source['id'], 'error': f'extraction: {exc}'})
@@ -182,8 +188,15 @@ def run_setup(config: Config, state: ArchiveState, steps: set[str]) -> dict:
                     status, detail = 'skipped', {'reason': 'Aucun chemin ADB ni APK configuré'}
                 else:
                     detail = {'apks': None, 'files': None}
-                    if config.emulator_apks:
-                        detail['apks'] = install_apks(list(config.emulator_apks), serial=config.adb_serial)
+                    apks = list(config.emulator_apks)
+                    for source in sources:
+                        if source.get('artifact_format') == 'apk':
+                            path = config.data_dir / 'apks' / source['filename']
+                            if path.is_file():
+                                apks.append({'path': str(path), 'sha256': source['sha256'],
+                                             'package': source['package']})
+                    if apks:
+                        detail['apks'] = install_apks(apks, serial=config.adb_serial)
                     if config.adb_remote:
                         plan = build_plan(config.library, config.adb_remote)
                         detail['files'] = deploy(plan, config.adb_remote, serial=config.adb_serial)

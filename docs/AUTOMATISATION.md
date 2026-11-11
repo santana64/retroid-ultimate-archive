@@ -25,7 +25,7 @@ max_workers = 4
 
 `sd_root` doit être un dossier ou lecteur existant. Le transfert microSD copie sans écraser les fichiers différents et contrôle chaque SHA-256. L'installation Android exige un appareil ADB autorisé. Pour un APK, ajouter `[[emulator_apks]]` avec le chemin local, son SHA-256 et l'identifiant de paquet Android ; l'installation est ensuite vérifiée avec `pm path`. Le programme ne télécharge pas encore les APK d'émulateurs faute de manifeste d'archives et d'empreintes validé. Il ne prétend pas configurer les contrôles ou garantir la compatibilité.
 
-Les statuts `patch_only` et `mod_only` signifient qu'un fichier additionnel est présent, mais que le jeu de base manque. `available` signifie qu'un fichier local correspondant est présent ; cela ne garantit ni lancement ni compatibilité. `source_candidate` indique seulement une page à examiner. `missing` signifie qu'aucune source vérifiée ni copie locale n'a été trouvée par cette exécution. Le rapport CSV garde un statut explicite pour chaque ID.
+Les statuts `patch_only` et `mod_only` signifient qu'un fichier additionnel est présent, mais que le jeu de base manque. `available` signifie qu'un fichier local correspondant est présent ; cela ne garantit ni lancement ni compatibilité. `apk_ready` signifie qu'un APK Android contrôlé attend un appareil ADB pour être installé. `source_candidate` indique seulement une page à examiner. `missing` signifie qu'aucune source vérifiée ni copie locale n'a été trouvée par cette exécution. Le rapport CSV garde un statut explicite pour chaque ID.
 
 ## Préparer le PC
 

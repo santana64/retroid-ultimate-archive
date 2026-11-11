@@ -108,6 +108,48 @@ class RunnerTests(unittest.TestCase):
                 run_setup(config, state, {'fetch', 'report'})
                 self.assertEqual(state.step('fetch')['detail']['extracted'], 0)
 
+    def test_fetch_direct_solarus_package_is_available(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            archive = root / 'data' / 'downloads' / 'game.solarus'
+            archive.parent.mkdir(parents=True)
+            with zipfile.ZipFile(archive, 'w') as z:
+                z.writestr('quest.dat', b'game')
+            source = [{'id': 682, 'kind': 'fangame', 'version': '1',
+                       'url': 'https://example.org/game.solarus', 'filename': 'game.solarus',
+                       'sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
+                       'download_authorized': True, 'evidence_url': 'https://example.org/project',
+                       'artifact_format': 'direct'}]
+            (root / 'sources.json').write_text(json.dumps(source), encoding='utf-8')
+            (root / 'retroid.toml').write_text('data_dir = "data"\nsource_manifest = "sources.json"\n', encoding='utf-8')
+            config = load_config(root / 'retroid.toml')
+            with ArchiveState(config.data_dir / 'state.sqlite') as state:
+                run_setup(config, state, {'fetch', 'verify', 'report'})
+                self.assertEqual(state.game(682)['status'], 'available')
+                self.assertEqual(state.step('fetch')['detail']['extracted'], 1)
+                run_setup(config, state, {'fetch'})
+                self.assertEqual(state.step('fetch')['detail']['extracted'], 0)
+
+    def test_fetch_android_apk_is_ready_to_install(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            apk = root / 'data' / 'downloads' / 'game.apk'
+            apk.parent.mkdir(parents=True)
+            with zipfile.ZipFile(apk, 'w') as z:
+                z.writestr('AndroidManifest.xml', b'manifest')
+            source = [{'id': 679, 'kind': 'fangame', 'version': '1',
+                       'url': 'https://example.org/game.apk', 'filename': 'game.apk',
+                       'sha256': hashlib.sha256(apk.read_bytes()).hexdigest(),
+                       'download_authorized': True, 'evidence_url': 'https://example.org/project',
+                       'artifact_format': 'apk', 'package': 'org.example.game'}]
+            (root / 'sources.json').write_text(json.dumps(source), encoding='utf-8')
+            (root / 'retroid.toml').write_text('data_dir = "data"\nsource_manifest = "sources.json"\n', encoding='utf-8')
+            config = load_config(root / 'retroid.toml')
+            with ArchiveState(config.data_dir / 'state.sqlite') as state:
+                run_setup(config, state, {'fetch', 'report'})
+                self.assertEqual(state.game(679)['status'], 'apk_ready')
+                self.assertEqual(state.summary()['apk_ready'], 1)
+
     def test_verify_detects_change_against_previous_manifest(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

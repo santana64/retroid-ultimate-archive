@@ -14,7 +14,7 @@ EXTENSIONS = {'.iso', '.cso', '.chd', '.rvz', '.gcz', '.gcm', '.wbfs', '.wia',
               '.pbp', '.cue', '.gdi', '.cdi', '.bin', '.ccd', '.img', '.m3u',
               '.zip', '.7z', '.nes', '.sfc', '.smc', '.gba', '.gbc', '.gb',
               '.n64', '.z64', '.v64', '.nds', '.3ds', '.md', '.gen', '.pce',
-              '.ws', '.wsc', '.scummvm'}
+              '.ws', '.wsc', '.scummvm', '.solarus'}
 SUFFIX_PLATFORM = {'.gba': {'gba'}, '.gbc': {'gbc', 'gb'}, '.gb': {'gb'},
                    '.nds': {'nds'}, '.3ds': {'n3ds'}, '.nes': {'nes'},
                    '.sfc': {'snes'}, '.smc': {'snes'}, '.n64': {'n64'},

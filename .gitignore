@@ -37,6 +37,7 @@
 *.ccd
 *.img
 *.wad
+*.solarus
 *.pak
 *.apk
 *.obb

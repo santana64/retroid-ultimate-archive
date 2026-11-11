@@ -11,7 +11,7 @@ from retroid_archive.sources import extract_verified, load_verified_sources
 class SourceTests(unittest.TestCase):
     def test_curated_sources_are_catalogue_entries_with_hashes(self):
         sources = load_verified_sources()
-        self.assertEqual({item['id'] for item in sources}, {622, 676})
+        self.assertEqual({item['id'] for item in sources}, {622, 676, 679, 682})
         self.assertTrue(all(len(item['sha256']) == 64 for item in sources))
         self.assertTrue(all(item['download_authorized'] for item in sources))
 

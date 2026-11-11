@@ -24,8 +24,11 @@ def scan_catalogue(games: list[Game], library: Path, sources: list[dict], state:
         folder = platform_folder(game.platform)
         matches = index.get((folder, normalise(game.title)), [])
         if source and source['kind'] != 'patch':
-            for member in source['members']:
-                target = library / folder / member['name']
+            names = ([source['filename']] if source.get('artifact_format') in ('direct', 'apk')
+                     else [member['name'] for member in source['members']])
+            for name in names:
+                target = ((state.path.parent / 'apks' / name) if source.get('artifact_format') == 'apk'
+                          else library / folder / name)
                 if target.is_file() and target not in matches:
                     matches.append(target)
         file_path = None
@@ -33,7 +36,8 @@ def scan_catalogue(games: list[Game], library: Path, sources: list[dict], state:
         if len(matches) == 1:
             base_names = {name.casefold() for name in source.get('base_files', [])} if source else set()
             present = {path.name.casefold() for path in (library / folder).iterdir()} if base_names else set()
-            status = ('mod_only' if source and source['kind'] == 'mod'
+            status = ('apk_ready' if source and source.get('artifact_format') == 'apk'
+                      else 'mod_only' if source and source['kind'] == 'mod'
                       and (not base_names or not base_names.issubset(present)) else 'available')
             file_path = str(matches[0])
             size = matches[0].stat().st_size

@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import stat
 import tempfile
 import zipfile
@@ -48,9 +49,17 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
             raise ValueError('URL HTTPS requise')
         if not re.fullmatch(r'[0-9a-fA-F]{64}', str(item.get('sha256', ''))):
             raise ValueError('SHA-256 de source absent')
-        if not isinstance(item.get('members'), list) or not item['members']:
+        direct = item.get('artifact_format') in ('direct', 'apk')
+        if direct and (item['kind'] not in ('fangame', 'homebrew') or
+                       not (name.endswith('.solarus') if item['artifact_format'] == 'direct'
+                            else name.endswith('.apk'))):
+            raise ValueError('Fichier direct non pris en charge')
+        if item.get('artifact_format') == 'apk' and not re.fullmatch(
+                r'[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+', str(item.get('package', ''))):
+            raise ValueError('Paquet Android absent ou invalide')
+        if not direct and (not isinstance(item.get('members'), list) or not item['members']):
             raise ValueError('Membres d’archive absents')
-        for member in item['members']:
+        for member in item.get('members', []):
             if not isinstance(member, dict) or not _safe_name(str(member.get('name', ''))):
                 raise ValueError('Membre d’archive invalide')
             if not re.fullmatch(r'[0-9a-fA-F]{64}', str(member.get('sha256', ''))):
@@ -58,6 +67,38 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
         if any(not _safe_name(str(name)) for name in item.get('base_files', [])):
             raise ValueError('Nom de fichier de base invalide')
     return sources
+
+
+def copy_verified_direct(source: Path, output: Path, expected_sha256: str) -> Path:
+    """Copy a verified direct download without replacing a different file."""
+    if _digest(source) != expected_sha256.lower():
+        raise ValueError('SHA-256 du fichier source incorrect')
+    if source.suffix.lower() == '.solarus':
+        with zipfile.ZipFile(source) as z:
+            z.getinfo('quest.dat')
+            if z.testzip() is not None:
+                raise ValueError('Archive Solarus corrompue')
+    elif source.suffix.lower() == '.apk':
+        with zipfile.ZipFile(source) as z:
+            z.getinfo('AndroidManifest.xml')
+            if z.testzip() is not None:
+                raise ValueError('APK corrompu')
+    output.parent.mkdir(parents=True, exist_ok=True)
+    if output.exists():
+        if _digest(output) != expected_sha256.lower():
+            raise FileExistsError(f'Fichier existant différent : {output}')
+        return output
+    with tempfile.NamedTemporaryFile(dir=output.parent, prefix='.direct-', delete=False) as stream:
+        staging = Path(stream.name)
+        with source.open('rb') as incoming:
+            shutil.copyfileobj(incoming, stream, 1024 * 1024)
+    try:
+        if _digest(staging) != expected_sha256.lower():
+            raise ValueError('SHA-256 de la copie incorrect')
+        os.replace(staging, output)
+    finally:
+        staging.unlink(missing_ok=True)
+    return output
 
 
 def extract_verified(archive: Path, output: Path, members: list[dict]) -> list[Path]:

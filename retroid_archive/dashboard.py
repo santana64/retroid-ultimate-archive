@@ -71,6 +71,7 @@ def launch_dashboard(config_path: Path | None = None) -> None:
     cards = tk.Frame(main, bg=BG)
     cards.pack(fill='x', pady=(0, 15))
     keys = [('games', 'JEUX SUIVIS'), ('available', 'FICHIERS PRÊTS'),
+            ('apk_ready', 'APK PRÊTS'),
             ('downloads', 'RÉCUPÉRÉS'), ('imports', 'IMPORTS'),
             ('patches', 'PATCHES'), ('missing', 'SANS SOURCE'),
             ('active', 'EN COURS'), ('errors', 'ERREURS')]
