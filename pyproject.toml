@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "retroid-ultimate-archive"
+version = "0.1.0"
+description = "Préparation locale et vérifiable d'une bibliothèque Retroid personnelle"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+retroid-archive = "retroid_archive.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["retroid_archive*"]

@@ -43,6 +43,12 @@
 *.7z
 *.rar
 *.zip
+*.ips
+*.bps
+*.ups
+*.xdelta
+*.vcdiff
+*.part
 *.torrent
 *.keys
 prod.keys
@@ -78,6 +84,8 @@ local/
 *.p12
 user_progress.json
 userdata/
+downloads/
+library/
 # Python, éditeurs et OS
 __pycache__/
 .pytest_cache/
