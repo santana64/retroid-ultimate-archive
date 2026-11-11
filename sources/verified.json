@@ -1,0 +1,28 @@
+[
+  {
+    "id": 622,
+    "kind": "patch",
+    "version": "3.2",
+    "url": "https://sphericalice.com/romhacking/hacks/gaia/pokemon_gaia_v3.2.zip",
+    "filename": "pokemon_gaia_v3.2.zip",
+    "sha256": "13b77277b775d2e526f531ac290667b9f1b557a680fc012dc87204a140a0c3be",
+    "download_authorized": true,
+    "evidence_url": "https://www.pokecommunity.com/threads/pok%C3%A9mon-gaia-version.326118/",
+    "members": [
+      {"name": "pokemon_gaia_v3.2.ups", "sha256": "237bf324b3897512c4c1726b37fd4c6db7c6698726a1dd5ea38eff5fb60290f9"}
+    ]
+  },
+  {
+    "id": 676,
+    "kind": "mod",
+    "version": "1.23",
+    "url": "https://romero.com/s/SIGIL_V1_23-8fh4.zip",
+    "filename": "SIGIL_V1_23.zip",
+    "sha256": "57c35a6bcd722433fc97344314e52c06c91fdfde33b18c6d1c14a4d29e229105",
+    "download_authorized": true,
+    "evidence_url": "https://romero.com/sigil",
+    "members": [
+      {"name": "SIGIL_V1_23.wad", "sha256": "29c3b8400657be4546eab1878e2883ffc50771c6be575677b1be5a0d0430f55d"}
+    ]
+  }
+]

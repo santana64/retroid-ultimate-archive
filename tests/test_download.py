@@ -58,6 +58,12 @@ class DownloadTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_entry(entry, allow_localhost=True)
 
+    def test_accepts_author_published_download_without_redistribution_claim(self):
+        entry = self.entry()
+        del entry['redistribution_verified']
+        entry['download_authorized'] = True
+        validate_entry(entry, allow_localhost=True)
+
     def test_resumes_partial_file_and_verifies_digest(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

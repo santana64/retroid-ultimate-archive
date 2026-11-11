@@ -18,7 +18,7 @@ RETRYABLE = {408, 429, 500, 502, 503, 504}
 
 
 def validate_entry(entry: dict, allow_localhost: bool = False) -> None:
-    required = ('id', 'url', 'filename', 'sha256', 'redistribution_verified', 'evidence_url')
+    required = ('id', 'url', 'filename', 'sha256', 'evidence_url')
     if any(key not in entry for key in required):
         raise ValueError('Entrée incomplète')
     if not isinstance(entry['id'], int) or entry['id'] < 1:
@@ -28,8 +28,8 @@ def validate_entry(entry: dict, allow_localhost: bool = False) -> None:
         raise ValueError('Nom de fichier invalide')
     if not re.fullmatch(r'[a-fA-F0-9]{64}', str(entry['sha256'])):
         raise ValueError('SHA-256 attendu requis')
-    if entry['redistribution_verified'] is not True:
-        raise ValueError('Autorisation de redistribution non vérifiée')
+    if entry.get('download_authorized') is not True and entry.get('redistribution_verified') is not True:
+        raise ValueError('Autorisation de téléchargement non vérifiée')
     evidence = urlparse(str(entry['evidence_url']))
     if evidence.scheme != 'https' or not evidence.netloc:
         raise ValueError('Page de preuve HTTPS requise')
