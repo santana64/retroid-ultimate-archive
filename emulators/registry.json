@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "last_review": "2026-11-11",
+  "important": "Références pour configurer Android; pas d'APK ni de BIOS inclus, et aucune compatibilité individuelle n'est garantie.",
+  "entries": [
+    {
+      "id": "esde",
+      "name": "ES-DE",
+      "type": "frontend",
+      "systems": [
+        "bibliothèque"
+      ],
+      "url": "https://es-de.org/",
+      "note": "Installer depuis la source officielle, puis laisser générer les dossiers."
+    },
+    {
+      "id": "retroarch",
+      "name": "RetroArch",
+      "type": "multi-system",
+      "systems": [
+        "NES",
+        "SNES",
+        "GB",
+        "GBC",
+        "GBA",
+        "Mega Drive",
+        "PC Engine",
+        "Arcade",
+        "Neo Geo Pocket Color",
+        "WonderSwan Color"
+      ],
+      "url": "https://www.retroarch.com/",
+      "note": "Vérifier les cores et les ROMsets; version Android officielle recommandée."
+    },
+    {
+      "id": "duckstation",
+      "name": "DuckStation",
+      "type": "standalone",
+      "systems": [
+        "PS1"
+      ],
+      "url": "https://github.com/stenzek/duckstation",
+      "note": "Fichier BIOS légalement obtenu requis selon les configurations."
+    },
+    {
+      "id": "ppsspp",
+      "name": "PPSSPP",
+      "type": "standalone",
+      "systems": [
+        "PSP"
+      ],
+      "url": "https://www.ppsspp.org/",
+      "note": "Compatibilité généralement élevée; réglages individuels possibles."
+    },
+    {
+      "id": "dolphin",
+      "name": "Dolphin",
+      "type": "standalone",
+      "systems": [
+        "GameCube",
+        "Wii"
+      ],
+      "url": "https://dolphin-emu.org/",
+      "note": "Mapper commandes de mouvement Wii; viser d'abord la résolution native."
+    },
+    {
+      "id": "melonds",
+      "name": "melonDS",
+      "type": "standalone",
+      "systems": [
+        "DS"
+      ],
+      "url": "https://melonds.kuribo64.net/",
+      "note": "Choisir affichage deux écrans et tactile."
+    },
+    {
+      "id": "azahar",
+      "name": "Azahar",
+      "type": "standalone",
+      "systems": [
+        "3DS"
+      ],
+      "url": "https://azahar-emu.org/",
+      "note": "Double écran; performances variables; vérifier version Android."
+    },
+    {
+      "id": "flycast",
+      "name": "Flycast",
+      "type": "standalone",
+      "systems": [
+        "Dreamcast"
+      ],
+      "url": "https://github.com/flyinghead/flycast",
+      "note": "Compatibilité dépend du format des fichiers et du BIOS selon cas."
+    },
+    {
+      "id": "scummvm",
+      "name": "ScummVM",
+      "type": "standalone",
+      "systems": [
+        "ScummVM"
+      ],
+      "url": "https://www.scummvm.org/",
+      "note": "Nécessite les fichiers de données du jeu, pas les ROMs de console."
+    },
+    {
+      "id": "vita3k",
+      "name": "Vita3K",
+      "type": "experimental",
+      "systems": [
+        "PS Vita"
+      ],
+      "url": "https://vita3k.org/",
+      "note": "Hors coeur du catalogue; support partiel."
+    },
+    {
+      "id": "ps2",
+      "name": "Émulateur PS2 Android",
+      "type": "manual-review",
+      "systems": [
+        "PS2"
+      ],
+      "url": null,
+      "note": "Choisir une version maintenue et légitime au moment de l'installation; ne pas télécharger d'APK repacké non fiable."
+    },
+    {
+      "id": "saturn",
+      "name": "Émulation Saturn Android",
+      "type": "manual-review",
+      "systems": [
+        "Saturn"
+      ],
+      "url": null,
+      "note": "Plusieurs émulateurs/cores; test jeu par jeu."
+    },
+    {
+      "id": "doom",
+      "name": "Source port DOOM Android",
+      "type": "manual-review",
+      "systems": [
+        "Doom · mod"
+      ],
+      "url": null,
+      "note": "Vérifier que le mod exige GZDoom, DSDA ou un autre moteur."
+    },
+    {
+      "id": "fangames",
+      "name": "Ports et moteurs de fangames",
+      "type": "manual-review",
+      "systems": [
+        "Android · fangame",
+        "PC · fangame"
+      ],
+      "url": null,
+      "note": "Suivre les auteurs; JoiPlay et autres outils ne garantissent pas la compatibilité."
+    }
+  ]
+}

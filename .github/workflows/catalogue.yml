@@ -1,0 +1,19 @@
+name: Vérification catalogue et scripts
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Vérifier les 899 entrées et l'absence de doublons
+        run: python scripts/validate_catalogue.py
+      - name: Vérifier la syntaxe des outils
+        run: python -m compileall -q scripts
+      - name: Vérifier l'aide de l'audit
+        run: python scripts/audit_library.py --help

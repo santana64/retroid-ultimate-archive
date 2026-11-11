@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "warning": "Les noms de dossier servent de repères; ES-DE doit générer les dossiers réellement supportés avant tout transfert.",
+  "platformFolders": {
+    "PS1": "psx",
+    "PS2": "ps2",
+    "PSP": "psp",
+    "GameCube": "gc",
+    "Wii": "wii",
+    "DS": "nds",
+    "3DS": "3ds",
+    "GBA": "gba",
+    "GBA · ROM hack": "gba",
+    "GBC · ROM hack": "gbc",
+    "SNES": "snes",
+    "SNES · ROM hack": "snes",
+    "NES": "nes",
+    "NES · ROM hack": "nes",
+    "N64": "n64",
+    "N64 · ROM hack": "n64",
+    "Mega Drive": "megadrive",
+    "Mega Drive · ROM hack": "megadrive",
+    "Dreamcast": "dreamcast",
+    "Saturn": "saturn",
+    "ScummVM": "scummvm",
+    "Arcade / Neo Geo": "arcade",
+    "PC Engine / CD": "pcengine",
+    "Neo Geo Pocket Color": "ngpc",
+    "Game Boy / Color": "gb/gbc (selon jeu)",
+    "WonderSwan Color": "wonderswancolor"
+  },
+  "manual": {
+    "Android": "application indépendante",
+    "PC · fangame": "PC / port spécial",
+    "Doom · mod": "moteur Doom adapté",
+    "Navigateur · fangame": "navigateur"
+  }
+}
