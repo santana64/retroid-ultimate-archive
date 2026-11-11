@@ -5,7 +5,7 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 ## Contenu
 
 - **899 jeux et créations de fans** — sélection éditoriale dans `catalogue/catalogue_ultimate.csv`, conservant les identifiants historiques.
-- **Bibliothèque interactive** — fichier HTML autonome dans `frontend/`.
+- **Bibliothèque interactive** — fichier HTML autonome dans `docs/index.html` (ouvrable hors ligne et publiable avec GitHub Pages).
 - **Émulation Android** — registre des émulateurs et des plateformes dans `emulators/`.
 - **ROM hacks et fangames** — méthode d'installation et distinction claire entre patches et jeux PC dans `romhacks/`.
 - **RetroAchievements** — guide dans `achievements/`.
@@ -16,7 +16,7 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 
 ## Démarrage rapide
 
-1. Parcourir `frontend/RETROID_ULTIMATE_COLLECTION.html` sur ordinateur.
+1. Parcourir `docs/index.html` sur ordinateur.
 2. Consulter `docs/INSTALLATION.md`.
 3. Installer Python 3.10+ et exécuter `python scripts/validate_catalogue.py` (aucune dépendance externe).
 4. À réception de la console, installer ES-DE puis **le laisser créer les dossiers** avant de copier des fichiers.
