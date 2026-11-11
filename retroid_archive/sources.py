@@ -49,12 +49,18 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
             raise ValueError('URL HTTPS requise')
         if not re.fullmatch(r'[0-9a-fA-F]{64}', str(item.get('sha256', ''))):
             raise ValueError('SHA-256 de source absent')
-        direct = item.get('artifact_format') in ('direct', 'apk')
-        if direct and (item['kind'] not in ('fangame', 'homebrew') or
-                       not (name.endswith('.solarus') if item['artifact_format'] == 'direct'
-                            else name.endswith('.apk'))):
+        artifact_format = item.get('artifact_format', 'archive')
+        if artifact_format not in ('archive', 'direct', 'apk', 'patch'):
+            raise ValueError('Format de source inconnu')
+        direct = artifact_format != 'archive'
+        if artifact_format in ('direct', 'apk') and (
+                item['kind'] not in ('fangame', 'homebrew') or
+                Path(name).suffix.lower() != ('.solarus' if artifact_format == 'direct' else '.apk')):
             raise ValueError('Fichier direct non pris en charge')
-        if item.get('artifact_format') == 'apk' and not re.fullmatch(
+        if artifact_format == 'patch' and (item['kind'] != 'patch' or
+                Path(name).suffix.lower() not in ('.ips', '.bps', '.ups')):
+            raise ValueError('Patch direct invalide')
+        if artifact_format == 'apk' and not re.fullmatch(
                 r'[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+', str(item.get('package', ''))):
             raise ValueError('Paquet Android absent ou invalide')
         if not direct and (not isinstance(item.get('members'), list) or not item['members']):
@@ -83,6 +89,11 @@ def copy_verified_direct(source: Path, output: Path, expected_sha256: str) -> Pa
             z.getinfo('AndroidManifest.xml')
             if z.testzip() is not None:
                 raise ValueError('APK corrompu')
+    elif source.suffix.lower() in ('.ips', '.bps', '.ups'):
+        magic = {'.ips': b'PATCH', '.bps': b'BPS1', '.ups': b'UPS1'}[source.suffix.lower()]
+        with source.open('rb') as stream:
+            if stream.read(len(magic)) != magic:
+                raise ValueError('Format de patch incorrect')
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.exists():
         if _digest(output) != expected_sha256.lower():

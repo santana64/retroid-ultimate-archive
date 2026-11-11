@@ -44,8 +44,9 @@ def scan_catalogue(games: list[Game], library: Path, sources: list[dict], state:
         elif len(matches) > 1:
             status = 'ambiguous'
         elif source and source['kind'] == 'patch' and all(
-                (state.path.parent / 'patches' / str(game.id) / member['name']).is_file()
-                for member in source['members']):
+                (state.path.parent / 'patches' / str(game.id) / name).is_file()
+                for name in ([source['filename']] if source.get('artifact_format') == 'patch'
+                             else [member['name'] for member in source['members']])):
             status = 'patch_only'
         elif source:
             status = 'downloadable'

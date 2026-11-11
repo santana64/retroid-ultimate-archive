@@ -54,7 +54,7 @@ def _fetch(config: Config, sources: list[dict], games_by_id: dict) -> dict:
                   else config.data_dir / 'apks' if source.get('artifact_format') == 'apk'
                   else config.library / platform_folder(games_by_id[source['id']].platform))
         try:
-            if source.get('artifact_format') in ('direct', 'apk'):
+            if source.get('artifact_format') in ('direct', 'apk', 'patch'):
                 target = folder / source['filename']
                 new_count = int(not target.exists())
                 copy_verified_direct(archive, target, source['sha256'])
@@ -93,8 +93,10 @@ def _patch(config: Config, sources: list[dict], games_by_id: dict) -> tuple[str,
         if base is None or not base.is_file():
             result['missing_base'].append(game_id)
             continue
-        for member in source['members']:
-            patch = config.data_dir / 'patches' / str(game_id) / member['name']
+        patch_names = ([source['filename']] if source.get('artifact_format') == 'patch'
+                       else [member['name'] for member in source['members']])
+        for name in patch_names:
+            patch = config.data_dir / 'patches' / str(game_id) / name
             if not patch.is_file():
                 continue
             title = re.sub(r'[<>:"/\\|?*]', ' ', games_by_id[game_id].title).strip()

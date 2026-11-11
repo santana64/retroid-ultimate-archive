@@ -48,5 +48,29 @@
     "evidence_url": "https://github.com/SRB2-Mobile/SRB2-Android/releases/tag/android-port-build-v2213-patch1",
     "artifact_format": "apk",
     "package": "org.stjr.srb2"
+  },
+  {
+    "id": 664,
+    "kind": "patch",
+    "version": "3",
+    "url": "https://www.dropbox.com/scl/fo/pk469bd86ghoa7ndcumlt/AM4HZokLRVjczGONXhY3qh8?rlkey=9rpgyqz8199geyqibamp3t0sq&dl=1",
+    "filename": "vision-quest-v3.zip",
+    "sha256": "0bc0cee42b1259c2ee23cd9b8cb040e8d9c2d4d0c145c2e09d1854ae1d20f003",
+    "download_authorized": true,
+    "evidence_url": "https://feuniverse.us/t/fe8-complete-fire-emblem-vision-quest-v3-by-pushwall-1-oct-22/3815",
+    "members": [
+      {"name": "Vision Quest v3.ups", "sha256": "1ffa02594fe3a7f08bf62e98cbaca534eb59894cd36daf9754df45f33253d21f"}
+    ]
+  },
+  {
+    "id": 649,
+    "kind": "patch",
+    "version": "1.2",
+    "url": "https://edit-sm.art/subversion/patches/subversion.1.2.bps",
+    "filename": "subversion.1.2.bps",
+    "sha256": "3f4f19f5974f7b504578278011a999280193bfb224b5f87420862e4ba0314c29",
+    "download_authorized": true,
+    "evidence_url": "https://edit-sm.art/subversion/",
+    "artifact_format": "patch"
   }
 ]

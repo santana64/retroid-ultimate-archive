@@ -150,6 +150,25 @@ class RunnerTests(unittest.TestCase):
                 self.assertEqual(state.game(679)['status'], 'apk_ready')
                 self.assertEqual(state.summary()['apk_ready'], 1)
 
+    def test_fetch_direct_bps_patch_is_patch_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            patch = root / 'data' / 'downloads' / 'hack.bps'
+            patch.parent.mkdir(parents=True)
+            patch.write_bytes(b'BPS1example')
+            source = [{'id': 649, 'kind': 'patch', 'version': '1',
+                       'url': 'https://example.org/hack.bps', 'filename': 'hack.bps',
+                       'sha256': hashlib.sha256(patch.read_bytes()).hexdigest(),
+                       'download_authorized': True, 'evidence_url': 'https://example.org/project',
+                       'artifact_format': 'patch'}]
+            (root / 'sources.json').write_text(json.dumps(source), encoding='utf-8')
+            (root / 'retroid.toml').write_text('data_dir = "data"\nsource_manifest = "sources.json"\n', encoding='utf-8')
+            config = load_config(root / 'retroid.toml')
+            with ArchiveState(config.data_dir / 'state.sqlite') as state:
+                run_setup(config, state, {'fetch', 'report'})
+                self.assertEqual(state.game(649)['status'], 'patch_only')
+                self.assertEqual(state.step('fetch')['detail']['extracted'], 1)
+
     def test_verify_detects_change_against_previous_manifest(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
