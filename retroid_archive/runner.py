@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 
 from .adb import build_plan, deploy, install_apks
+from .basefinder import find_base
 from .catalogue import load_catalogue, platform_folder
 from .config import Config
 from .downloads import download_manifest
@@ -84,20 +85,26 @@ def _import(config: Config, games: list) -> tuple[str, dict]:
 
 def _patch(config: Config, sources: list[dict], games_by_id: dict) -> tuple[str, dict]:
     patches = [source for source in sources if source['kind'] == 'patch']
-    if not config.patch_bases:
-        return 'skipped', {'reason': 'Aucun fichier de base personnel configuré'}
-    result: dict = {'applied': 0, 'existing': 0, 'missing_base': [], 'errors': []}
+    result: dict = {'applied': 0, 'existing': 0, 'missing_base': [], 'base_search': {}, 'errors': []}
+    roots = (config.library, *config.import_roots)
     for source in patches:
         game_id = source['id']
-        base = config.patch_bases.get(game_id)
-        if base is None or not base.is_file():
-            result['missing_base'].append(game_id)
-            continue
         patch_names = ([source['filename']] if source.get('artifact_format') == 'patch'
                        else [member['name'] for member in source['members']])
         for name in patch_names:
             patch = config.data_dir / 'patches' / str(game_id) / name
             if not patch.is_file():
+                continue
+            base = config.patch_bases.get(game_id)
+            if base is None:
+                try:
+                    base, reason = find_base(patch, roots)
+                except Exception as exc:
+                    result['errors'].append({'id': game_id, 'error': f'Recherche de base : {exc}'})
+                    continue
+                result['base_search'][str(game_id)] = reason
+            if base is None or not base.is_file():
+                result['missing_base'].append(game_id)
                 continue
             title = re.sub(r'[<>:"/\\|?*]', ' ', games_by_id[game_id].title).strip()
             output = config.library / platform_folder(games_by_id[game_id].platform) / (title + base.suffix)
@@ -118,7 +125,9 @@ def _patch(config: Config, sources: list[dict], games_by_id: dict) -> tuple[str,
                     result['applied'] += 1
             except Exception as exc:
                 result['errors'].append({'id': game_id, 'error': str(exc)})
-    return 'failed' if result['errors'] else 'completed', result
+    status = ('failed' if result['errors'] else 'completed' if result['applied'] or result['existing']
+              else 'skipped')
+    return status, result
 
 
 def _prepare(config: Config, games: list) -> dict:

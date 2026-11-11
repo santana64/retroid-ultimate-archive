@@ -4,6 +4,7 @@ import hashlib
 import tempfile
 import unittest
 import zipfile
+import zlib
 from dataclasses import replace
 from pathlib import Path
 
@@ -204,6 +205,31 @@ class RunnerTests(unittest.TestCase):
             status, detail = _patch(config, [source], {1: game})
             self.assertEqual(status, 'failed')
             self.assertEqual(output.read_bytes(), b'wrong')
+
+    def test_patch_finds_compatible_personal_base_without_per_game_config(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            owned = root / 'owned'
+            owned.mkdir()
+            base = owned / 'my-copy.gba'
+            base.write_bytes(b'abcdef')
+            config = replace(load_config(), data_dir=root / 'data', library=root / 'ROMs',
+                             import_roots=(owned,), patch_bases={})
+            patch = config.data_dir / 'patches' / '1' / 'test.ups'
+            patch.parent.mkdir(parents=True)
+            source_bytes, target_bytes = b'abcdef', b'abXYef'
+            body = b'UPS1' + bytes([0x86, 0x86, 0x82, ord('c') ^ ord('X'), ord('d') ^ ord('Y'), 0])
+            body += zlib.crc32(source_bytes).to_bytes(4, 'little')
+            body += zlib.crc32(target_bytes).to_bytes(4, 'little')
+            patch.write_bytes(body + zlib.crc32(body).to_bytes(4, 'little'))
+            source = {'id': 1, 'kind': 'patch', 'members': [{'name': 'test.ups'}]}
+            game = Game(1, 'Test', 'GBA', '', '', 'my-copy', '')
+            status, detail = _patch(config, [source], {1: game})
+            self.assertEqual((status, detail['applied']), ('completed', 1))
+            self.assertEqual((config.library / 'gba' / 'Test.gba').read_bytes(), target_bytes)
+            self.assertEqual(base.read_bytes(), source_bytes)
+            status, detail = _patch(config, [source], {1: game})
+            self.assertEqual((status, detail['existing']), ('completed', 1))
 
 
 if __name__ == '__main__':

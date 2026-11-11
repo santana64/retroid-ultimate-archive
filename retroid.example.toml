@@ -4,6 +4,7 @@ data_dir = "data"
 library = "data/ROMs"
 download_dir = "data/downloads"
 max_workers = 4
+# Un seul dossier contenant tes ROMs de base suffit, même avec des sous-dossiers.
 import_roots = []
 # sd_root = "E:/"
 # adb_remote = "/storage/1234-5678/ROMs"
@@ -14,5 +15,6 @@ import_roots = []
 # sha256 = "SHA256_HEXADECIMAL_64_CARACTERES"
 # package = "org.ppsspp.ppsspp"
 
+# Facultatif : uniquement si la recherche automatique ne peut pas identifier la base.
 # [patch_bases]
 # "622" = "D:/Mes jeux/Pokemon FireRed.gba"
