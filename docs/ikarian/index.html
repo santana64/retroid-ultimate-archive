@@ -48,6 +48,7 @@
         <button data-tab="collection" class="tab active">▦ <span>Bibliothèque</span></button>
         <button data-tab="constellations" class="tab">✧ <span>Constellations</span></button>
         <button data-tab="journal" class="tab">◷ <span>Journal</span></button>
+        <button data-tab="retroachievements" class="tab">✪ <span>RetroAchievements</span></button>
         <span class="nav-right">V1.0 · ARCHIVE PERSONNELLE</span>
       </nav>
 
@@ -75,6 +76,17 @@
         <div class="journal" id="journal"></div>
       </section>
 
+      <section id="retroachievements-page" class="page hidden">
+        <div class="section-heading"><div><span class="kicker">SYNCHRONISATION EXTERNE</span><h2>RetroAchievements</h2></div></div>
+        <p class="section-desc">Consulte tes succès RetroAchievements importés depuis leur API. Ils restent distincts des défis personnels IKARIAN et ne donnent pas de XP IKARIAN.</p>
+        <div class="ra-tools">
+          <div><strong id="ra-user">Aucun compte importé</strong><p id="ra-summary">Pour commencer, exécute le script local ikarian/ra_sync.py, puis importe son JSON ici.</p></div>
+          <button id="ra-import" class="primary-button">Importer les succès RA ⇧</button>
+          <input id="ra-file" type="file" accept=".json,application/json" hidden>
+        </div>
+        <div id="ra-list" class="journal"></div>
+      </section>
+
       <footer>
         <div><strong>◈ IKARIAN</strong><span>Une mémoire pour les jeux qui comptent.</span></div>
         <p>Les trophées IKARIAN sont des objectifs personnels déclaratifs, non validés par les émulateurs. Les succès RetroAchievements sont distincts et ne sont pas encore synchronisés dans cette version.</p>
@@ -89,6 +101,7 @@
       <div class="dialog-progress"><span id="dialog-progress-text"></span><strong id="dialog-percent"></strong><div class="progress-rail"><div id="dialog-progress-bar"></div></div></div>
       <p class="disclaimer">Défis IKARIAN personnels : tu valides manuellement ce que tu as réalisé. Aucun déblocage n'est présenté comme vérifié par le jeu.</p>
       <div class="trophy-list" id="trophy-list"></div>
+      <div id="ra-game" class="ra-game hidden"></div>
       <label class="notes-label" for="notes">Carnet de voyage <small>(enregistré localement)</small></label>
       <textarea id="notes" placeholder="Une découverte, un souvenir, un objectif particulier…"></textarea>
       <div class="dialog-footer"><button id="save-note" class="primary-button">Enregistrer le carnet</button><span id="save-status" aria-live="polite"></span></div>
