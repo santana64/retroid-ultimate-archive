@@ -5,6 +5,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const STORE = "ikarian:v1:progress";
+  const RA_STORE = "ikarian:v1:retroachievements";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
   const fold = value => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   const pictos = {bronze:"◇",silver:"◈",gold:"✦",platinum:"✧",mythic:"♛"};
@@ -13,6 +14,7 @@
   let db = null, byId = new Map(), trophyIndex = new Map(), state = defaultState();
   let current = null, activeTab = "collection", pageSize = 60, muted = true, celebrationTimer = null;
   let storageOK = true, soundContext = null;
+  let ra = {username:"",unlocks:[]};
 
   function getStored() {
     try {
@@ -23,6 +25,11 @@
           favorites:Array.isArray(raw.favorites) ? raw.favorites.map(String) : []};
       }
     } catch (err) { storageOK = false; console.warn("Progression locale indisponible",err); }
+    try {
+      const saved = JSON.parse(localStorage.getItem(RA_STORE) || "null");
+      if(saved && typeof saved.username==="string" && Array.isArray(saved.unlocks))
+        ra = {username:saved.username,unlocks:saved.unlocks.slice(0,20000)};
+    }catch(err){console.warn("Historique RetroAchievements local indisponible",err);}
   }
   function persist() {
     try { localStorage.setItem(STORE, JSON.stringify(state)); storageOK = true; }
@@ -128,6 +135,7 @@
     }).join("");
     $("notes").value=String(state.notes[game.id]||"");
     $("save-status").textContent="";
+    renderGameRA(game);
   }
   function openGame(id) {
     if(!byId.has(String(id))) return;
@@ -245,15 +253,74 @@
       '<div class="journal-item"><span class="journal-symbol">'+pictos[e.rarity]+'</span><div><strong>'+esc(e.name)+'</strong><span>'+esc(e.game)+' · '+rarityName[e.rarity]+'</span></div><time>'+esc(dateString(e.time))+'</time></div>'
     ).join(""):'<p class="empty">Ton premier trophée apparaîtra ici. Choisis un jeu dans la bibliothèque.</p>';
   }
+
+  // RA imports remain a separate source. A local JSON file is not proof that a game
+  // automatically verified any IKARIAN objective; the two systems never share XP.
+  const canonicalTitle = title => fold(title).replace(/[^a-z0-9]+/g," ").trim();
+  function matchedGameForRA(entry) {
+    const title = canonicalTitle(entry.gameTitle);
+    const matches = db.games.filter(g => canonicalTitle(g.title) === title);
+    return matches.length===1 ? matches[0] : null;
+  }
+  function renderGameRA(game) {
+    const el=$("ra-game");
+    const matching=ra.unlocks.filter(e=>{
+      const mapped=matchedGameForRA(e);
+      return mapped && mapped.id===game.id;
+    });
+    el.classList.toggle("hidden",matching.length===0);
+    if(!matching.length){el.innerHTML="";return;}
+    el.innerHTML='<div class="ra-game-heading"><strong>✪ RetroAchievements · '+matching.length+' succès importés</strong><small>Historique API séparé des trophées IKARIAN</small></div>'+
+      matching.slice(0,30).map(e=>'<div class="ra-game-row"><span>✪</span><div><strong>'+esc(e.title)+'</strong><small>'+esc(e.description)+'</small></div><small>'+esc(e.hardcore?"HARDCORE":"SOFTCORE")+'</small></div>').join("");
+  }
+  function renderRA() {
+    $("ra-user").textContent=ra.username?"Compte : "+ra.username:"Aucun compte importé";
+    $("ra-summary").textContent=ra.unlocks.length?ra.unlocks.length+" succès importés (échantillon temporel cumulatif). Les titres ambigus restent non associés.":"Pour commencer, exécute le script local ikarian/ra_sync.py, puis importe son JSON ici.";
+    const out=ra.unlocks.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,150);
+    $("ra-list").innerHTML=out.length?out.map(e=>{
+      const game=matchedGameForRA(e);
+      return '<div class="journal-item"><span class="journal-symbol">✪</span><div><strong>'+esc(e.title)+'</strong>'+
+        '<span>'+esc(e.gameTitle)+' · '+esc(e.consoleName||"Plateforme non indiquée")+' · '+(game?'Associé au catalogue':'Association à confirmer')+
+        ' · '+(e.hardcore?'Hardcore':'Softcore')+'</span></div><time>'+esc(e.date||"Date inconnue")+'</time></div>';
+    }).join(""):'<p class="empty">Aucun succès RetroAchievements importé pour le moment.</p>';
+  }
+  async function importRA(file) {
+    if(!file || file.size>8_000_000){toast("Import RA impossible","Fichier absent ou trop volumineux.","error");return;}
+    try {
+      const payload=JSON.parse(await file.text());
+      if(payload.schema!=="ikarian-ra-import.v1" || payload.source!=="retroachievements-api" ||
+         typeof payload.username!=="string" || !Array.isArray(payload.unlocks))throw Error("Format d'export RA incorrect");
+      const username=payload.username.slice(0,100);
+      if(!username)throw Error("Compte RA manquant");
+      const dedup=new Map();
+      if(ra.username===username)for(const e of ra.unlocks)dedup.set(String(e.achievementId)+":"+(e.hardcore?1:0),e);
+      for(const e of payload.unlocks){
+        if(!e || typeof e!=="object" || !Number.isSafeInteger(e.achievementId) || !Number.isSafeInteger(e.gameId) || typeof e.title!=="string" || typeof e.gameTitle!=="string")continue;
+        const normalized={
+          achievementId:e.achievementId,gameId:e.gameId,gameTitle:e.gameTitle.slice(0,200),
+          consoleName:String(e.consoleName||"").slice(0,100),title:e.title.slice(0,200),
+          description:String(e.description||"").slice(0,600),date:String(e.date||"").slice(0,40),
+          points:Number(e.points)||0,hardcore:Boolean(e.hardcore)
+        };
+        dedup.set(normalized.achievementId+":"+(normalized.hardcore?1:0),normalized);
+      }
+      ra={username,unlocks:[...dedup.values()].slice(0,20000)};
+      localStorage.setItem(RA_STORE,JSON.stringify(ra));
+      renderRA();if(current)renderGameRA(byId.get(current));
+      toast("RetroAchievements importé",ra.unlocks.length+" succès conservés dans un espace séparé.","info","gold");
+    }catch(err){toast("Import RA impossible",err.message||"Fichier non reconnu.","error");}
+  }
+
   function showTab(tab) {
-    if(!["collection","constellations","journal"].includes(tab))return;
+    if(!["collection","constellations","journal","retroachievements"].includes(tab))return;
     activeTab=tab;
     document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
-    for(const name of ["collection","constellations","journal"])$(name+"-page").classList.toggle("hidden",name!==tab);
+    for(const name of ["collection","constellations","journal","retroachievements"])$(name+"-page").classList.toggle("hidden",name!==tab);
     if(tab==="constellations")renderConstellations();
     if(tab==="journal")renderJournal();
+    if(tab==="retroachievements")renderRA();
   }
-  function refresh() {renderStats();renderGames();renderConstellations();renderJournal();}
+  function refresh() {renderStats();renderGames();renderConstellations();renderJournal();renderRA();}
   function exportBackup() {
     const backup={schema:"ikarian-save.v1",createdAt:new Date().toISOString(),unlocked:state.unlocked,notes:state.notes,favorites:state.favorites};
     const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
@@ -297,6 +364,8 @@
     $("trophy-list").addEventListener("click",e=>{const b=e.target.closest("[data-trophy]");if(b)toggleTrophy(b.dataset.trophy);});
     $("save-note").addEventListener("click",saveNote);
     document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+    $("ra-import").addEventListener("click",()=>$("ra-file").click());
+    $("ra-file").addEventListener("change",async e=>{await importRA(e.target.files?.[0]);e.target.value="";});
     $("export").addEventListener("click",exportBackup);
     $("import").addEventListener("click",()=>$("importfile").click());
     $("importfile").addEventListener("change",async e=>{await importBackup(e.target.files?.[0]);e.target.value="";});
