@@ -1,0 +1,25 @@
+name: IKARIAN integrity
+on:
+  push:
+    branches: [main, 'feature/**']
+    paths:
+      - 'docs/ikarian/**'
+      - 'ikarian/**'
+      - 'catalogue/catalogue_ultimate.csv'
+      - '.github/workflows/ikarian.yml'
+  pull_request:
+    paths:
+      - 'docs/ikarian/**'
+      - 'ikarian/**'
+      - 'catalogue/catalogue_ultimate.csv'
+      - '.github/workflows/ikarian.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate application JavaScript
+        run: node --check docs/ikarian/app.js
+      - name: Validate original catalogue and trophy manifest
+        run: python3 -m unittest discover -s ikarian/tests -v
