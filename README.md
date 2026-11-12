@@ -8,6 +8,7 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 - **Bibliothèque interactive** — fichier HTML autonome dans `docs/index.html` (ouvrable hors ligne et publiable avec GitHub Pages).
 - **Émulation Android** — registre des émulateurs et des plateformes dans `emulators/`.
 - **ROM hacks et fangames** — méthode d'installation et distinction claire entre patches et jeux PC dans `romhacks/`.
+- **IKARIAN** — tableau de bord de trophées personnels sur 899 jeux, niveaux, platines, constellations et import séparé des succès RetroAchievements dans `docs/ikarian/` (voir `ikarian/README.md`).
 - **RetroAchievements** — guide dans `achievements/`.
 - **Outils PC** — validation du catalogue et contrôle *en lecture seule* de la microSD dans `scripts/`.
 - **Guides** — installation Android, préparation de la carte et précautions légales dans `docs/`.
@@ -17,10 +18,11 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 ## Démarrage rapide
 
 1. Parcourir `docs/index.html` sur ordinateur.
-2. Consulter `docs/INSTALLATION.md`.
-3. Installer Python 3.10+ et exécuter `python scripts/validate_catalogue.py` (aucune dépendance externe).
-4. À réception de la console, installer ES-DE puis **le laisser créer les dossiers** avant de copier des fichiers.
-5. Utiliser `python scripts/audit_library.py --root "CHEMIN_VERS_LA_CARTE"` pour obtenir un rapport sans modifier la carte.
+2. Lancer **IKARIAN** : depuis `docs/`, exécuter `python -m http.server 8000`, puis ouvrir `http://localhost:8000/ikarian/`.
+3. Consulter `docs/INSTALLATION.md`.
+4. Installer Python 3.10+ et exécuter `python scripts/validate_catalogue.py` (aucune dépendance externe).
+5. À réception de la console, installer ES-DE puis **le laisser créer les dossiers** avant de copier des fichiers.
+6. Utiliser `python scripts/audit_library.py --root "CHEMIN_VERS_LA_CARTE"` pour obtenir un rapport sans modifier la carte.
 
 ## Confidentialité, droits et périmètre
 

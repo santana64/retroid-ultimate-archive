@@ -1,0 +1,19 @@
+{
+  "name": "IKARIAN — Aether Achievement System",
+  "short_name": "IKARIAN",
+  "description": "Bibliothèque personnelle de trophées pour 899 jeux rétro",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090911",
+  "theme_color": "#090911",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
