@@ -383,6 +383,9 @@
       if(db.schema!=="ikarian.v1" || !Array.isArray(db.games) || db.games.length!==899)throw Error("Le manifeste IKARIAN ne contient pas les 899 jeux attendus.");
       db.games.forEach((g,i)=>{g.id=String(g.id);g._order=i;byId.set(g.id,g);for(const t of g.trophies)trophyIndex.set(t.id,t);});
       buildFilters();refresh();
+      if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost" || location.hostname==="127.0.0.1")){
+        navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("Cache hors-ligne non disponible",err));
+      }
       if(!storageOK)toast("Stockage local limité","Utilise l'export pour ne pas perdre ta progression.","error");
     }catch(err){
       $("games").innerHTML='<p class="empty">'+esc(err.message)+' Ouvre IKARIAN via un serveur web (exemple : python -m http.server).</p>';
