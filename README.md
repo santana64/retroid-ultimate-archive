@@ -9,18 +9,22 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 - **Émulation Android** — registre des émulateurs et des plateformes dans `emulators/`.
 - **ROM hacks et fangames** — méthode d'installation et distinction claire entre patches et jeux PC dans `romhacks/`.
 - **RetroAchievements** — guide dans `achievements/`.
-- **Outils PC** — validation du catalogue et contrôle *en lecture seule* de la microSD dans `scripts/`.
+- **Outils PC** — validation, import personnel, téléchargement contrôlé, patches IPS/BPS/UPS, préparation microSD et transfert ADB dans `retroid_archive/` et `scripts/`.
 - **Guides** — installation Android, préparation de la carte et précautions légales dans `docs/`.
 
 **Choix éditoriaux :** aucun jeu Pokémon officiel, seulement sept exceptions de course/sport, aucun ajout de jeu de combat versus. Certains fangames PC ne peuvent pas être lancés directement sur Android ; la présence au catalogue n'est pas une garantie de compatibilité.
 
 ## Démarrage rapide
 
-1. Parcourir `docs/index.html` sur ordinateur.
-2. Consulter `docs/INSTALLATION.md`.
-3. Installer Python 3.10+ et exécuter `python scripts/validate_catalogue.py` (aucune dépendance externe).
-4. À réception de la console, installer ES-DE puis **le laisser créer les dossiers** avant de copier des fichiers.
-5. Utiliser `python scripts/audit_library.py --root "CHEMIN_VERS_LA_CARTE"` pour obtenir un rapport sans modifier la carte.
+1. Installer Python 3.12+.
+2. Dans le dépôt, lancer `python retroid.py setup --all`.
+3. Lire `data/report.csv` : les 899 entrées ont chacune un statut.
+4. Ouvrir `python retroid.py dashboard` pour suivre les opérations.
+5. Copier `retroid.example.toml` vers `retroid.toml` pour ajouter ses dossiers de jeux personnels, sa microSD ou ses APK d'émulateur vérifiés, puis relancer `python retroid.py resume`.
+
+La première exécution télécharge automatiquement les huit sources contrôlées dans `sources/verified.json` (patches Gaia, Vision Quest, Subversion et Brown ; mod SIGIL ; quête Mystery of Solarus DX ; APK Android de Sonic Robo Blast 2 ; release `.gbc` de Polished Crystal). Elle n'invente pas de fichiers pour les titres sans source ni copie locale. Les fichiers et rapports personnels restent dans `data/`, ignoré par Git.
+
+Pour importer ses propres fichiers, préparer la microSD, appliquer des patches ou préparer le transfert ADB, consulter [le guide d'automatisation](docs/AUTOMATISATION.md). Les commandes de préparation et de déploiement sont en simulation par défaut.
 
 ## Confidentialité, droits et périmètre
 
@@ -30,6 +34,6 @@ La liste est une sélection culturelle, pas un benchmark individuel de 899 jeux.
 
 ## État du projet
 
-Catalogue et documentation en préparation, installation Retroid et tests individuels à réaliser sur matériel. Ce dépôt sert de **source de vérité**, tandis que les données volumineuses restent sur la microSD ou un stockage personnel distinct.
+La CLI, le scan des 899 entrées, la reprise, le téléchargement de sources validées, l'import local, les patches IPS/BPS/UPS, la copie microSD, le transfert ADB et le tableau de bord Windows disposent de tests automatisés. L'installation des APK locaux vérifiés est prête pour un appareil ADB, mais aucun émulateur ni jeu n'a été testé sur une Retroid Pocket 6. La recherche des autres sources, les configurations d'émulateur par système et les médias restent à compléter. Ce dépôt sert de **source de vérité**, tandis que les données volumineuses restent sur la microSD ou un stockage personnel distinct.
 
 Les marques et titres cités appartiennent à leurs ayants droit.

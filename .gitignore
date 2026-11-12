@@ -37,12 +37,19 @@
 *.ccd
 *.img
 *.wad
+*.solarus
 *.pak
 *.apk
 *.obb
 *.7z
 *.rar
 *.zip
+*.ips
+*.bps
+*.ups
+*.xdelta
+*.vcdiff
+*.part
 *.torrent
 *.keys
 prod.keys
@@ -78,6 +85,12 @@ local/
 *.p12
 user_progress.json
 userdata/
+downloads/
+library/
+data/
+retroid.toml
+*.sqlite
+*.jsonl
 # Python, éditeurs et OS
 __pycache__/
 .pytest_cache/

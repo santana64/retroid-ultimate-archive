@@ -1,0 +1,100 @@
+[
+  {
+    "id": 622,
+    "kind": "patch",
+    "version": "3.2",
+    "url": "https://sphericalice.com/romhacking/hacks/gaia/pokemon_gaia_v3.2.zip",
+    "filename": "pokemon_gaia_v3.2.zip",
+    "sha256": "13b77277b775d2e526f531ac290667b9f1b557a680fc012dc87204a140a0c3be",
+    "download_authorized": true,
+    "evidence_url": "https://www.pokecommunity.com/threads/pok%C3%A9mon-gaia-version.326118/",
+    "members": [
+      {"name": "pokemon_gaia_v3.2.ups", "sha256": "237bf324b3897512c4c1726b37fd4c6db7c6698726a1dd5ea38eff5fb60290f9"}
+    ]
+  },
+  {
+    "id": 676,
+    "kind": "mod",
+    "version": "1.23",
+    "url": "https://romero.com/s/SIGIL_V1_23-8fh4.zip",
+    "filename": "SIGIL_V1_23.zip",
+    "sha256": "57c35a6bcd722433fc97344314e52c06c91fdfde33b18c6d1c14a4d29e229105",
+    "download_authorized": true,
+    "evidence_url": "https://romero.com/sigil",
+    "base_files": ["DOOM.WAD"],
+    "members": [
+      {"name": "SIGIL_V1_23.wad", "sha256": "29c3b8400657be4546eab1878e2883ffc50771c6be575677b1be5a0d0430f55d"}
+    ]
+  },
+  {
+    "id": 682,
+    "kind": "fangame",
+    "version": "1.12.3",
+    "url": "https://gitlab.com/solarus-games/games/zsdx/-/releases/v1.12.3/downloads/zsdx-v1.12.3.solarus",
+    "filename": "zsdx-v1.12.3.solarus",
+    "sha256": "1f7d78fbf538de819451f0c37f762b5baabc1ec2572e10f8e05dedb0579dc95a",
+    "download_authorized": true,
+    "evidence_url": "https://www.solarus-games.org/games/the-legend-of-zelda-mystery-of-solarus-dx/",
+    "artifact_format": "direct"
+  },
+  {
+    "id": 679,
+    "kind": "fangame",
+    "version": "2.2.13-patch1",
+    "url": "https://github.com/SRB2-Mobile/SRB2-Android/releases/download/android-port-build-v2213-patch1/srb2-android-v2213-gameFull-release-patch1.apk",
+    "filename": "srb2-android-v2213-gameFull-release-patch1.apk",
+    "sha256": "e2523670af2404ce47545230b43e4accc616f48206a8138933606eab8d89d027",
+    "download_authorized": true,
+    "evidence_url": "https://github.com/SRB2-Mobile/SRB2-Android/releases/tag/android-port-build-v2213-patch1",
+    "artifact_format": "apk",
+    "package": "org.stjr.srb2"
+  },
+  {
+    "id": 664,
+    "kind": "patch",
+    "version": "3",
+    "url": "https://www.dropbox.com/scl/fo/pk469bd86ghoa7ndcumlt/AM4HZokLRVjczGONXhY3qh8?rlkey=9rpgyqz8199geyqibamp3t0sq&dl=1",
+    "filename": "vision-quest-v3.zip",
+    "sha256": "0bc0cee42b1259c2ee23cd9b8cb040e8d9c2d4d0c145c2e09d1854ae1d20f003",
+    "download_authorized": true,
+    "evidence_url": "https://feuniverse.us/t/fe8-complete-fire-emblem-vision-quest-v3-by-pushwall-1-oct-22/3815",
+    "members": [
+      {"name": "Vision Quest v3.ups", "sha256": "1ffa02594fe3a7f08bf62e98cbaca534eb59894cd36daf9754df45f33253d21f"}
+    ]
+  },
+  {
+    "id": 649,
+    "kind": "patch",
+    "version": "1.2",
+    "url": "https://edit-sm.art/subversion/patches/subversion.1.2.bps",
+    "filename": "subversion.1.2.bps",
+    "sha256": "3f4f19f5974f7b504578278011a999280193bfb224b5f87420862e4ba0314c29",
+    "download_authorized": true,
+    "evidence_url": "https://edit-sm.art/subversion/",
+    "artifact_format": "patch"
+  },
+  {
+    "id": 628,
+    "kind": "romhack",
+    "version": "3.2.3",
+    "url": "https://github.com/Rangi42/polishedcrystal/releases/download/v3.2.3/polishedcrystal-3.2.3.gbc",
+    "filename": "polishedcrystal-3.2.3.gbc",
+    "sha256": "f06dbebe3fd20db54e7804605f7a55ad05b8ca203c62209705290d8880864803",
+    "download_authorized": true,
+    "evidence_url": "https://github.com/Rangi42/polishedcrystal/releases/tag/v3.2.3",
+    "artifact_format": "rom"
+  },
+  {
+    "id": 957,
+    "kind": "patch",
+    "version": "6.1.2",
+    "url": "https://rainbowdevs.com/wp-content/uploads/2024/12/pokebrown6-1-2.zip",
+    "filename": "pokebrown6-1-2.zip",
+    "sha256": "9f1781691e189a0ba4a8a8f15d7852d892264044291e5b81434659c8e1756864",
+    "download_authorized": true,
+    "evidence_url": "https://rainbowdevs.com/title/brown/",
+    "members": [
+      {"name": "POKEBROWN_6-1-2.ups", "archive_path": "pokebrown6-1-2/POKEBROWN_6-1-2.ups", "sha256": "346fd87bc0b71ad3eb506f7f12c3d86645b4e9b1dbd3b80dd45fae58aa806d6e"}
+    ]
+  }
+]

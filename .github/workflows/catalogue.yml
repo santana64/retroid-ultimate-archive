@@ -14,6 +14,8 @@ jobs:
       - name: Vérifier les 899 entrées et l'absence de doublons
         run: python scripts/validate_catalogue.py
       - name: Vérifier la syntaxe des outils
-        run: python -m compileall -q scripts
+        run: python -m compileall -q scripts retroid_archive retroid.py
+      - name: Tester le moteur local
+        run: python -m unittest discover -s tests -v
       - name: Vérifier l'aide de l'audit
         run: python scripts/audit_library.py --help
