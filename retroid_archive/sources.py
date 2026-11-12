@@ -28,6 +28,11 @@ def _safe_name(name: str) -> bool:
     return bool(name) and name not in ('.', '..') and Path(name).name == name and '/' not in name and '\\' not in name
 
 
+def _safe_archive_path(name: str) -> bool:
+    return bool(name) and not name.startswith('/') and '\\' not in name and all(
+        part not in ('', '.', '..') for part in name.split('/'))
+
+
 def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
     sources = json.loads(path.read_text(encoding='utf-8'))
     if not isinstance(sources, list):
@@ -41,7 +46,7 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
         if not isinstance(name, str) or not _safe_name(name) or name.casefold() in filenames:
             raise ValueError('Nom source absent ou dupliqué')
         filenames.add(name.casefold())
-        if item.get('kind') not in ('patch', 'mod', 'homebrew', 'fangame'):
+        if item.get('kind') not in ('patch', 'mod', 'homebrew', 'fangame', 'romhack'):
             raise ValueError('Type de source invalide')
         if item.get('download_authorized') is not True:
             raise ValueError('Téléchargement non autorisé')
@@ -50,7 +55,7 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
         if not re.fullmatch(r'[0-9a-fA-F]{64}', str(item.get('sha256', ''))):
             raise ValueError('SHA-256 de source absent')
         artifact_format = item.get('artifact_format', 'archive')
-        if artifact_format not in ('archive', 'direct', 'apk', 'patch'):
+        if artifact_format not in ('archive', 'direct', 'apk', 'patch', 'rom'):
             raise ValueError('Format de source inconnu')
         direct = artifact_format != 'archive'
         if artifact_format in ('direct', 'apk') and (
@@ -60,6 +65,9 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
         if artifact_format == 'patch' and (item['kind'] != 'patch' or
                 Path(name).suffix.lower() not in ('.ips', '.bps', '.ups')):
             raise ValueError('Patch direct invalide')
+        if artifact_format == 'rom' and (item['kind'] != 'romhack' or
+                Path(name).suffix.lower() != '.gbc'):
+            raise ValueError('Release ROM hack directe invalide')
         if artifact_format == 'apk' and not re.fullmatch(
                 r'[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+', str(item.get('package', ''))):
             raise ValueError('Paquet Android absent ou invalide')
@@ -68,6 +76,8 @@ def load_verified_sources(path: Path = DEFAULT_SOURCES) -> list[dict]:
         for member in item.get('members', []):
             if not isinstance(member, dict) or not _safe_name(str(member.get('name', ''))):
                 raise ValueError('Membre d’archive invalide')
+            if not _safe_archive_path(str(member.get('archive_path', member['name']))):
+                raise ValueError('Chemin dans l’archive invalide')
             if not re.fullmatch(r'[0-9a-fA-F]{64}', str(member.get('sha256', ''))):
                 raise ValueError('SHA-256 de membre absent')
         if any(not _safe_name(str(name)) for name in item.get('base_files', [])):
@@ -113,7 +123,9 @@ def copy_verified_direct(source: Path, output: Path, expected_sha256: str) -> Pa
 
 
 def extract_verified(archive: Path, output: Path, members: list[dict]) -> list[Path]:
-    if not members or any(not _safe_name(str(item.get('name', ''))) for item in members):
+    if not members or any(not _safe_name(str(item.get('name', ''))) or
+                          not _safe_archive_path(str(item.get('archive_path', item['name'])))
+                          for item in members):
         raise ValueError('Membres demandés invalides')
     output = output.expanduser().resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -121,7 +133,7 @@ def extract_verified(archive: Path, output: Path, members: list[dict]) -> list[P
     with zipfile.ZipFile(archive) as z, tempfile.TemporaryDirectory(dir=output, prefix='.extract-') as temp:
         staging = Path(temp)
         for item, path in zip(members, paths):
-            info = z.getinfo(item['name'])
+            info = z.getinfo(item.get('archive_path', item['name']))
             mode = info.external_attr >> 16
             if info.is_dir() or stat.S_ISLNK(mode) or info.file_size > MAX_MEMBER_BYTES:
                 raise ValueError('Membre d’archive non sûr')

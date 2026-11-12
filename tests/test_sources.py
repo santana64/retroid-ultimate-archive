@@ -11,7 +11,7 @@ from retroid_archive.sources import extract_verified, load_verified_sources
 class SourceTests(unittest.TestCase):
     def test_curated_sources_are_catalogue_entries_with_hashes(self):
         sources = load_verified_sources()
-        self.assertEqual({item['id'] for item in sources}, {622, 649, 664, 676, 679, 682})
+        self.assertEqual({item['id'] for item in sources}, {622, 628, 649, 664, 676, 679, 682, 957})
         self.assertTrue(all(len(item['sha256']) == 64 for item in sources))
         self.assertTrue(all(item['download_authorized'] for item in sources))
 
@@ -42,6 +42,19 @@ class SourceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 extract_verified(archive, root / 'out', [{'name': 'patch.ups', 'sha256': '0' * 64}])
             self.assertFalse((root / 'out' / 'patch.ups').exists())
+
+    def test_extracts_named_patch_from_nested_archive_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            archive = root / 'download.zip'
+            with zipfile.ZipFile(archive, 'w') as z:
+                z.writestr('release/patch.ups', b'UPS1demo')
+            selected = [{'name': 'patch.ups', 'archive_path': 'release/patch.ups',
+                         'sha256': hashlib.sha256(b'UPS1demo').hexdigest()}]
+            paths = extract_verified(archive, root / 'out', selected)
+            self.assertEqual(paths[0].read_bytes(), b'UPS1demo')
+            with self.assertRaises(ValueError):
+                extract_verified(archive, root / 'out', [{**selected[0], 'archive_path': '../escape.ups'}])
 
 
 if __name__ == '__main__':

@@ -131,6 +131,25 @@ class RunnerTests(unittest.TestCase):
                 run_setup(config, state, {'fetch'})
                 self.assertEqual(state.step('fetch')['detail']['extracted'], 0)
 
+    def test_fetch_creator_published_romhack_file_is_available(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rom = root / 'data' / 'downloads' / 'creator.gbc'
+            rom.parent.mkdir(parents=True)
+            rom.write_bytes(b'creator release')
+            source = [{'id': 628, 'kind': 'romhack', 'version': '1',
+                       'url': 'https://example.org/creator.gbc', 'filename': 'creator.gbc',
+                       'sha256': hashlib.sha256(rom.read_bytes()).hexdigest(),
+                       'download_authorized': True, 'evidence_url': 'https://example.org/release',
+                       'artifact_format': 'rom'}]
+            (root / 'sources.json').write_text(json.dumps(source), encoding='utf-8')
+            (root / 'retroid.toml').write_text('data_dir = "data"\nsource_manifest = "sources.json"\n', encoding='utf-8')
+            config = load_config(root / 'retroid.toml')
+            with ArchiveState(config.data_dir / 'state.sqlite') as state:
+                run_setup(config, state, {'fetch', 'report'})
+                self.assertEqual(state.game(628)['status'], 'available')
+                self.assertEqual(state.step('fetch')['detail']['extracted'], 1)
+
     def test_fetch_android_apk_is_ready_to_install(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

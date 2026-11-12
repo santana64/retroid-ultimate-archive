@@ -55,7 +55,7 @@ def _fetch(config: Config, sources: list[dict], games_by_id: dict) -> dict:
                   else config.data_dir / 'apks' if source.get('artifact_format') == 'apk'
                   else config.library / platform_folder(games_by_id[source['id']].platform))
         try:
-            if source.get('artifact_format') in ('direct', 'apk', 'patch'):
+            if source.get('artifact_format') in ('direct', 'apk', 'patch', 'rom'):
                 target = folder / source['filename']
                 new_count = int(not target.exists())
                 copy_verified_direct(archive, target, source['sha256'])

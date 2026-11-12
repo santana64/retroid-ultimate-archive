@@ -22,7 +22,7 @@ Catalogue personnel et configuration reproductible de la **Retroid Pocket 6 (8 G
 4. Ouvrir `python retroid.py dashboard` pour suivre les opérations.
 5. Copier `retroid.example.toml` vers `retroid.toml` pour ajouter ses dossiers de jeux personnels, sa microSD ou ses APK d'émulateur vérifiés, puis relancer `python retroid.py resume`.
 
-La première exécution télécharge automatiquement les six sources contrôlées dans `sources/verified.json` (patches Gaia, Vision Quest et Subversion, mod SIGIL, quête Mystery of Solarus DX et APK Android de Sonic Robo Blast 2). Elle n'invente pas de fichiers pour les titres sans source ni copie locale. Les fichiers et rapports personnels restent dans `data/`, ignoré par Git.
+La première exécution télécharge automatiquement les huit sources contrôlées dans `sources/verified.json` (patches Gaia, Vision Quest, Subversion et Brown ; mod SIGIL ; quête Mystery of Solarus DX ; APK Android de Sonic Robo Blast 2 ; release `.gbc` de Polished Crystal). Elle n'invente pas de fichiers pour les titres sans source ni copie locale. Les fichiers et rapports personnels restent dans `data/`, ignoré par Git.
 
 Pour importer ses propres fichiers, préparer la microSD, appliquer des patches ou préparer le transfert ADB, consulter [le guide d'automatisation](docs/AUTOMATISATION.md). Les commandes de préparation et de déploiement sont en simulation par défaut.
 

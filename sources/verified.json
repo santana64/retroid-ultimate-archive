@@ -72,5 +72,29 @@
     "download_authorized": true,
     "evidence_url": "https://edit-sm.art/subversion/",
     "artifact_format": "patch"
+  },
+  {
+    "id": 628,
+    "kind": "romhack",
+    "version": "3.2.3",
+    "url": "https://github.com/Rangi42/polishedcrystal/releases/download/v3.2.3/polishedcrystal-3.2.3.gbc",
+    "filename": "polishedcrystal-3.2.3.gbc",
+    "sha256": "f06dbebe3fd20db54e7804605f7a55ad05b8ca203c62209705290d8880864803",
+    "download_authorized": true,
+    "evidence_url": "https://github.com/Rangi42/polishedcrystal/releases/tag/v3.2.3",
+    "artifact_format": "rom"
+  },
+  {
+    "id": 957,
+    "kind": "patch",
+    "version": "6.1.2",
+    "url": "https://rainbowdevs.com/wp-content/uploads/2024/12/pokebrown6-1-2.zip",
+    "filename": "pokebrown6-1-2.zip",
+    "sha256": "9f1781691e189a0ba4a8a8f15d7852d892264044291e5b81434659c8e1756864",
+    "download_authorized": true,
+    "evidence_url": "https://rainbowdevs.com/title/brown/",
+    "members": [
+      {"name": "POKEBROWN_6-1-2.ups", "archive_path": "pokebrown6-1-2/POKEBROWN_6-1-2.ups", "sha256": "346fd87bc0b71ad3eb506f7f12c3d86645b4e9b1dbd3b80dd45fae58aa806d6e"}
+    ]
   }
 ]

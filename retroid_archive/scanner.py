@@ -24,7 +24,7 @@ def scan_catalogue(games: list[Game], library: Path, sources: list[dict], state:
         folder = platform_folder(game.platform)
         matches = index.get((folder, normalise(game.title)), [])
         if source and source['kind'] != 'patch':
-            names = ([source['filename']] if source.get('artifact_format') in ('direct', 'apk')
+            names = ([source['filename']] if source.get('artifact_format') in ('direct', 'apk', 'rom')
                      else [member['name'] for member in source['members']])
             for name in names:
                 target = ((state.path.parent / 'apks' / name) if source.get('artifact_format') == 'apk'
