@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090912">
+  <meta name="description" content="IKARIAN — ton musée vivant de trophées et de collections rétro.">
+  <title>IKARIAN — Aether Achievement System</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-1"></div><div class="ambient ambient-2"></div>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="IKARIAN accueil">
+        <span class="brand-mark">◈</span>
+        <span><strong>IKARIAN</strong><small>AETHER ACHIEVEMENT SYSTEM</small></span>
+      </a>
+      <div class="top-actions">
+        <span class="mode-chip"><span class="pulse"></span> BIBLIOTHÈQUE LOCALE</span>
+        <button class="icon-button" id="sound" title="Activer / désactiver les sons" aria-label="Activer ou désactiver les sons">♫</button>
+        <button class="icon-button" id="export" title="Exporter la sauvegarde" aria-label="Exporter la sauvegarde">⇩</button>
+        <button class="icon-button" id="import" title="Importer une sauvegarde" aria-label="Importer une sauvegarde">⇧</button>
+        <input id="importfile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="eyebrow-line"></span> THE ARCHIVE • VOLUME I</span>
+          <h1>Chaque monde.<br><em>Chaque légende.</em></h1>
+          <p>Une bibliothèque de défis pour 899 univers. Rassemble les pièces de ton héritage vidéoludique, à ton rythme.</p>
+          <div class="hero-tags"><span>◇ TROPHÉES</span><span>✦ CONSTELLATIONS</span><span>◉ SOUVENIRS</span></div>
+        </div>
+        <div class="hero-emblem" aria-hidden="true"><div class="emblem-rings"><div class="emblem-core">◈</div></div><span>IKARIAN<br>ARCHIVE</span></div>
+      </section>
+
+      <section class="stats" id="stats" aria-live="polite">
+        <div class="stat"><small>JEUX INDEXÉS</small><strong id="stat-games">—</strong><span>Dans la collection</span></div>
+        <div class="stat"><small>TROPHÉES</small><strong id="stat-trophies">—</strong><span id="stat-unlocks">0 déverrouillé</span></div>
+        <div class="stat"><small>PLATINES</small><strong id="stat-platinum">0</strong><span>Maîtrises achevées</span></div>
+        <div class="stat stat-level"><small>NIVEAU IKARIAN</small><strong id="stat-level">1</strong><div class="level-bar"><div id="level-progress"></div></div><span id="stat-xp">0 XP</span></div>
+      </section>
+
+      <nav class="tabs" aria-label="Sections IKARIAN">
+        <button data-tab="collection" class="tab active">▦ <span>Bibliothèque</span></button>
+        <button data-tab="constellations" class="tab">✧ <span>Constellations</span></button>
+        <button data-tab="journal" class="tab">◷ <span>Journal</span></button>
+        <span class="nav-right">V1.0 · ARCHIVE PERSONNELLE</span>
+      </nav>
+
+      <section id="collection-page" class="page">
+        <div class="section-heading"><div><span class="kicker">LE CATALOGUE</span><h2>Choisir une aventure</h2></div><div class="result-count" id="counter"></div></div>
+        <div class="filters">
+          <label class="search-field"><span>⌕</span><input id="search" type="search" placeholder="Rechercher un jeu, une plateforme, un genre…" autocomplete="off" aria-label="Rechercher un jeu"></label>
+          <select id="platform" aria-label="Filtrer par plateforme"><option value="">Toutes les plateformes</option></select>
+          <select id="status" aria-label="Filtrer par progression"><option value="all">Tous les statuts</option><option value="new">À découvrir</option><option value="started">En cours</option><option value="complete">Platines</option><option value="favorites">Favoris</option></select>
+          <select id="sort" aria-label="Trier les jeux"><option value="priority">Priorité du catalogue</option><option value="title">Titre A → Z</option><option value="progress">Progression</option><option value="platform">Plateforme</option></select>
+        </div>
+        <div class="games-grid" id="games"></div>
+        <p class="empty hidden" id="empty">Aucun jeu ne correspond à ces filtres.</p>
+        <div class="load-row"><button class="secondary-button hidden" id="more">Afficher 60 jeux supplémentaires ↓</button></div>
+      </section>
+
+      <section id="constellations-page" class="page hidden">
+        <div class="section-heading"><div><span class="kicker">RÉCOMPENSES TRANSVERSALES</span><h2>Les constellations</h2></div></div>
+        <p class="section-desc">Maîtrise plusieurs univers pour débloquer des distinctions qui traversent les générations de consoles.</p>
+        <div class="constellation-grid" id="constellations"></div>
+      </section>
+
+      <section id="journal-page" class="page hidden">
+        <div class="section-heading"><div><span class="kicker">MÉMOIRE DE L'ARCHIVE</span><h2>Journal des exploits</h2></div></div>
+        <div class="journal" id="journal"></div>
+      </section>
+
+      <footer>
+        <div><strong>◈ IKARIAN</strong><span>Une mémoire pour les jeux qui comptent.</span></div>
+        <p>Les trophées IKARIAN sont des objectifs personnels déclaratifs, non validés par les émulateurs. Les succès RetroAchievements sont distincts et ne sont pas encore synchronisés dans cette version.</p>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="game-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-body">
+      <div class="dialog-top"><span class="kicker" id="dialog-platform"></span><button id="close-dialog" class="icon-button" aria-label="Fermer">✕</button></div>
+      <div class="dialog-title-row"><div><h2 id="dialog-title"></h2><p id="dialog-summary"></p></div><button id="favorite" class="favorite-button" aria-label="Ajouter aux favoris">☆</button></div>
+      <div class="dialog-progress"><span id="dialog-progress-text"></span><strong id="dialog-percent"></strong><div class="progress-rail"><div id="dialog-progress-bar"></div></div></div>
+      <p class="disclaimer">Défis IKARIAN personnels : tu valides manuellement ce que tu as réalisé. Aucun déblocage n'est présenté comme vérifié par le jeu.</p>
+      <div class="trophy-list" id="trophy-list"></div>
+      <label class="notes-label" for="notes">Carnet de voyage <small>(enregistré localement)</small></label>
+      <textarea id="notes" placeholder="Une découverte, un souvenir, un objectif particulier…"></textarea>
+      <div class="dialog-footer"><button id="save-note" class="primary-button">Enregistrer le carnet</button><span id="save-status" aria-live="polite"></span></div>
+    </div>
+  </dialog>
+  <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+  <div id="celebration" class="celebration hidden" aria-hidden="true"><div class="celebration-inner"><span class="burst-symbol">✦</span><small>IKARIAN · ACCOMPLISSEMENT</small><h2 id="celebration-title">Maîtrise achevée</h2><p id="celebration-subtitle"></p></div></div>
+</body>
+</html>
